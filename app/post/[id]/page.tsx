@@ -94,23 +94,29 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
           <div className="space-y-6 p-5">
             {post.title ? (
-              <h1 className="-mb-2 font-serif text-2xl font-semibold text-foreground text-balance">{post.title}</h1>
+              <h1 className="-mb-3 font-serif text-2xl font-semibold leading-tight text-foreground text-balance">
+                {post.title}
+              </h1>
             ) : null}
 
-            <div className="flex items-center gap-4">
-              <ScoreRing score={post.regenScore} size={96} />
-              <div className="flex-1">
-                <h2 className="font-serif text-xl font-semibold text-foreground">Regenerative Score</h2>
-                <p className="text-sm text-muted-foreground">
-                  Average across six ecological dimensions of this space.
-                </p>
-                {post.locationLabel ? (
-                  <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {post.locationLabel}
-                  </div>
-                ) : null}
+            <div className="rounded-2xl border border-border/60 bg-secondary/40 p-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <ScoreRing score={post.regenScore} size={80} />
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-serif text-lg font-semibold leading-tight text-foreground sm:text-xl">
+                    Regenerative Score
+                  </h2>
+                  {post.locationLabel ? (
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">{post.locationLabel}</span>
+                    </div>
+                  ) : null}
+                </div>
               </div>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground text-pretty">
+                Average across six ecological dimensions of this space.
+              </p>
             </div>
 
             {post.caption ? <p className="text-pretty leading-relaxed text-foreground">{post.caption}</p> : null}
