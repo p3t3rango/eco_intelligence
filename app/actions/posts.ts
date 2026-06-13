@@ -56,10 +56,22 @@ export async function createPost(formData: FormData): Promise<CreatePostResult> 
   // Upload the image to Blob storage.
   const bytes = Buffer.from(await file.arrayBuffer())
   const ext = (file.type.split("/")[1] || "jpg").replace("jpeg", "jpg")
-  const blob = await put(`yards/${userId}/${Date.now()}.${ext}`, bytes, {
-    access: "public",
-    contentType: file.type || "image/jpeg",
-  })
+  let blob
+  try {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      throw new Error("BLOB_READ_WRITE_TOKEN is not set")
+    }
+    blob = await put(`yards/${userId}/${Date.now()}.${ext}`, bytes, {
+      access: "public",
+      contentType: file.type || "image/jpeg",
+    })
+  } catch (err) {
+    console.log("[v0] blob upload failed:", err instanceof Error ? err.message : err)
+    return {
+      ok: false,
+      error: "Photo storage isn't connected in this preview yet. It will work automatically once the app is published.",
+    }
+  }
 
   // Run the Gemini ecological analysis.
   let analysis

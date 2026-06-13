@@ -1,9 +1,20 @@
 import { generateText, Output } from "ai"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { z } from "zod"
 import type { YardAnalysis, ScoreKey } from "@/lib/types"
 
-// Use Gemini via the Vercel AI Gateway (zero-config with AI_GATEWAY_API_KEY).
-const MODEL = "google/gemini-2.5-flash"
+// Prefer the user's own Gemini API key when it's available (used in production /
+// once the key is present in the environment). Otherwise fall back to the same
+// Gemini model through the Vercel AI Gateway, which is configured zero-config here.
+function resolveModel() {
+  const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
+  if (geminiKey) {
+    const google = createGoogleGenerativeAI({ apiKey: geminiKey })
+    return google("gemini-2.5-flash")
+  }
+  // Gateway model string (authenticated via AI_GATEWAY_API_KEY).
+  return "google/gemini-2.5-flash"
+}
 
 const SCORE_KEYS: ScoreKey[] = ["biodiversity", "pollinator", "sunlight", "soil", "food", "water"]
 
@@ -62,7 +73,7 @@ export async function analyzeYard(opts: {
   climateZone?: string | null
 }): Promise<YardAnalysis> {
   const { experimental_output: parsed } = await generateText({
-    model: MODEL,
+    model: resolveModel(),
     output: Output.object({ schema: analysisSchema }),
     messages: [
       {
