@@ -8,7 +8,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Trophy, MapPin, Sprout } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const RANK_STYLES = ["text-accent", "text-chart-4", "text-primary"]
+const RANK_STYLES = [
+  "bg-accent/15 text-accent ring-1 ring-accent/30",
+  "bg-muted text-foreground/70 ring-1 ring-border",
+  "bg-clay/15 text-clay ring-1 ring-clay/30",
+]
 
 export default async function LeaderboardPage() {
   const session = await getSession()
@@ -53,13 +57,13 @@ export default async function LeaderboardPage() {
                   <Link
                     href={`/u/${leader.handle}`}
                     className={cn(
-                      "flex items-center gap-4 rounded-2xl border bg-card p-4 transition-colors hover:bg-secondary/50",
-                      isMe ? "border-primary/40 ring-1 ring-primary/20" : "border-border",
+                      "lift flex items-center gap-4 rounded-2xl border bg-card p-4 shadow-soft",
+                      isMe ? "border-primary/40 ring-1 ring-primary/20" : "border-border/70",
                     )}
                   >
                     <span
                       className={cn(
-                        "w-7 shrink-0 text-center font-serif text-xl font-bold",
+                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-serif text-lg font-bold",
                         i < 3 ? RANK_STYLES[i] : "text-muted-foreground",
                       )}
                     >
@@ -88,7 +92,7 @@ export default async function LeaderboardPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-serif text-xl font-bold text-primary">{leader.totalImpact}</div>
+                      <div className="text-gradient font-serif text-2xl font-bold">{leader.totalImpact}</div>
                       <div className="text-[11px] text-muted-foreground">
                         {leader.postCount} {leader.postCount === 1 ? "yard" : "yards"} · best {leader.bestScore}
                       </div>

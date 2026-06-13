@@ -43,15 +43,18 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   return (
     <div className="bg-sun-rays flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <Link href="/" className="mb-8 flex items-center justify-center gap-2">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+        <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
+          <span className="animate-float flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground glow-primary">
             <Leaf className="h-6 w-6" />
           </span>
-          <span className="font-serif text-2xl font-semibold text-foreground">Ecological Intelligence</span>
+          <span className="font-serif text-2xl font-semibold tracking-tight">
+            <span className="text-gradient">Ecological</span>
+            <span className="text-foreground"> Intelligence</span>
+          </span>
         </Link>
 
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
-          <h1 className="font-serif text-2xl font-semibold text-card-foreground text-balance">
+        <div className="glass rounded-3xl p-8 shadow-lift">
+          <h1 className="font-serif text-3xl font-semibold text-card-foreground text-balance">
             {isSignUp ? "Grow your corner of the planet" : "Welcome back, steward"}
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -96,7 +99,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
                 required
               />
             </div>
-            <Button type="submit" disabled={loading} className="mt-2 w-full" size="lg">
+            <Button type="submit" variant="gradient" disabled={loading} className="mt-2 w-full" size="lg">
               {loading ? "Just a moment…" : isSignUp ? "Create account" : "Sign in"}
             </Button>
           </form>

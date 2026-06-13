@@ -29,12 +29,12 @@ export function MetricBars({ scores, columns = 2 }: { scores: Scores; columns?: 
             <Icon className="h-4 w-4 shrink-0 text-primary" />
             <div className="flex-1">
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-medium text-foreground">{m.label}</span>
-                <span className="text-xs tabular-nums text-muted-foreground">{value}</span>
+                <span className="text-xs font-semibold text-foreground">{m.label}</span>
+                <span className="text-xs font-semibold tabular-nums text-muted-foreground">{value}</span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-700"
+                  className="h-full rounded-full bg-[linear-gradient(90deg,var(--primary),var(--accent))] transition-all duration-700"
                   style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
                 />
               </div>

@@ -43,7 +43,7 @@ export function PostCard({ post }: { post: FeedPost }) {
   }
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+    <article className="lift overflow-hidden rounded-3xl border border-border/70 bg-card shadow-soft">
       {/* Author */}
       <div className="flex items-center gap-3 p-4">
         <Link href={`/u/${post.author.handle}`}>
@@ -70,15 +70,16 @@ export function PostCard({ post }: { post: FeedPost }) {
       </div>
 
       {/* Image with score overlay */}
-      <Link href={`/post/${post.id}`} className="relative block">
+      <Link href={`/post/${post.id}`} className="group relative block overflow-hidden">
         <Image
           src={post.imageUrl || "/placeholder.svg"}
           alt={post.caption ?? "Yard photo"}
           width={800}
           height={600}
-          className="aspect-[4/3] w-full object-cover"
+          className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute right-3 top-3 rounded-2xl bg-background/85 p-1.5 backdrop-blur-sm">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/25 via-transparent to-transparent" />
+        <div className="glass absolute right-3 top-3 rounded-2xl p-1.5 shadow-soft">
           <ScoreRing score={post.regenScore} size={72} stroke={7} />
         </div>
       </Link>
@@ -94,8 +95,8 @@ export function PostCard({ post }: { post: FeedPost }) {
         ) : null}
 
         {analysis?.summary ? (
-          <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
-            <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-primary">
+          <div className="bg-bloom rounded-2xl border border-primary/15 p-3.5">
+            <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-primary">
               <Sparkles className="h-3.5 w-3.5" />
               Ecological Read
             </div>
@@ -106,23 +107,23 @@ export function PostCard({ post }: { post: FeedPost }) {
         <MetricBars scores={post.scores} />
 
         {/* Actions */}
-        <div className="flex items-center gap-4 border-t border-border pt-3">
+        <div className="flex items-center gap-2 border-t border-border/70 pt-3">
           <button
             onClick={onLike}
             disabled={isPending}
             className={cn(
-              "flex items-center gap-1.5 text-sm font-medium transition-colors",
-              liked ? "text-accent" : "text-muted-foreground hover:text-accent",
+              "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors",
+              liked ? "bg-clay/10 text-clay" : "text-muted-foreground hover:bg-clay/10 hover:text-clay",
             )}
             aria-pressed={liked}
             aria-label="Cheer this garden"
           >
-            <Heart className={cn("h-5 w-5", liked && "fill-current")} />
+            <Heart key={`${liked}`} className={cn("h-5 w-5", liked && "animate-pop fill-current")} />
             {count}
           </button>
           <Link
             href={`/post/${post.id}`}
-            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
             <MessageCircle className="h-5 w-5" />
             {post.commentCount}
