@@ -21,6 +21,9 @@ export const auth = betterAuth({
     ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`]
       : []),
+    // Accept any Vercel deployment alias / preview URL for this project so
+    // sign-in works regardless of which *.vercel.app hostname is opened.
+    'https://*.vercel.app',
   ],
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
