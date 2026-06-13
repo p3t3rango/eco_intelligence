@@ -11,7 +11,7 @@ export default async function GrowPage() {
   const profile = await ensureProfile()
 
   return (
-    <div className="min-h-dvh pb-20 sm:pb-0">
+    <div className="min-h-dvh pb-32 sm:pb-0">
       <SiteNav
         user={{
           displayName: profile?.displayName ?? "Gardener",

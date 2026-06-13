@@ -21,7 +21,7 @@ export default async function LeaderboardPage() {
   const leaders = await getLeaderboard()
 
   return (
-    <div className="min-h-dvh pb-20 sm:pb-0">
+    <div className="min-h-dvh pb-24 sm:pb-0">
       <SiteNav
         user={{
           displayName: me?.displayName ?? "Gardener",

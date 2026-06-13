@@ -19,7 +19,7 @@ export default async function MyProfilePage() {
   ])
 
   return (
-    <div className="min-h-dvh pb-20 sm:pb-0">
+    <div className="min-h-dvh pb-24 sm:pb-0">
       <SiteNav
         user={{ displayName: profile.displayName, handle: profile.handle, avatarUrl: profile.avatarUrl }}
       />
