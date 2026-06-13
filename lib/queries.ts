@@ -1,11 +1,13 @@
 import { db } from "@/lib/db"
-import { comments, likes, posts, profiles } from "@/lib/db/schema"
-import { desc, eq, sql, and } from "drizzle-orm"
+import { comments, likes, posts, profiles, yardTasks } from "@/lib/db/schema"
+import { asc, desc, eq, sql, and } from "drizzle-orm"
 
 export type FeedPost = {
   id: number
   imageUrl: string
+  title: string | null
   caption: string | null
+  isShared: boolean
   locationLabel: string | null
   climateZone: string | null
   regenScore: number
@@ -29,13 +31,17 @@ export type FeedPost = {
   likeCount: number
   commentCount: number
   likedByMe: boolean
+  taskCount: number
+  taskDone: number
 }
 
 function mapRow(row: any, likedByMe: boolean): FeedPost {
   return {
     id: row.id,
     imageUrl: row.imageUrl,
+    title: row.title ?? null,
     caption: row.caption,
+    isShared: !!row.isShared,
     locationLabel: row.locationLabel,
     climateZone: row.climateZone,
     regenScore: row.regenScore,
@@ -59,13 +65,17 @@ function mapRow(row: any, likedByMe: boolean): FeedPost {
     likeCount: Number(row.likeCount ?? 0),
     commentCount: Number(row.commentCount ?? 0),
     likedByMe,
+    taskCount: Number(row.taskCount ?? 0),
+    taskDone: Number(row.taskDone ?? 0),
   }
 }
 
 const baseSelect = {
   id: posts.id,
   imageUrl: posts.imageUrl,
+  title: posts.title,
   caption: posts.caption,
+  isShared: posts.isShared,
   locationLabel: posts.locationLabel,
   climateZone: posts.climateZone,
   regenScore: posts.regenScore,
@@ -84,6 +94,8 @@ const baseSelect = {
   authorLocation: profiles.locationLabel,
   likeCount: sql<number>`(select count(*) from ${likes} where ${likes.postId} = ${posts.id})`,
   commentCount: sql<number>`(select count(*) from ${comments} where ${comments.postId} = ${posts.id})`,
+  taskCount: sql<number>`(select count(*) from ${yardTasks} where ${yardTasks.postId} = ${posts.id})`,
+  taskDone: sql<number>`(select count(*) from ${yardTasks} where ${yardTasks.postId} = ${posts.id} and ${yardTasks.done} = true)`,
 }
 
 async function likedSet(currentUserId: string | null, postIds: number[]) {
@@ -92,12 +104,14 @@ async function likedSet(currentUserId: string | null, postIds: number[]) {
   return new Set(rows.map((r) => r.postId))
 }
 
-export async function getFeed(currentUserId: string | null): Promise<FeedPost[]> {
+// Community feed: ONLY yards the owner chose to share.
+export async function getCommunityFeed(currentUserId: string | null): Promise<FeedPost[]> {
   const rows = await db
     .select(baseSelect)
     .from(posts)
     .leftJoin(profiles, eq(profiles.userId, posts.userId))
-    .orderBy(desc(posts.createdAt))
+    .where(eq(posts.isShared, true))
+    .orderBy(desc(posts.sharedAt), desc(posts.createdAt))
     .limit(50)
 
   const liked = await likedSet(
@@ -105,6 +119,18 @@ export async function getFeed(currentUserId: string | null): Promise<FeedPost[]>
     rows.map((r) => r.id),
   )
   return rows.map((r) => mapRow(r, liked.has(r.id)))
+}
+
+// All of the current user's own yards (private dashboard).
+export async function getMyYards(userId: string): Promise<FeedPost[]> {
+  const rows = await db
+    .select(baseSelect)
+    .from(posts)
+    .leftJoin(profiles, eq(profiles.userId, posts.userId))
+    .where(eq(posts.userId, userId))
+    .orderBy(desc(posts.createdAt))
+
+  return rows.map((r) => mapRow(r, false))
 }
 
 export async function getPost(postId: number, currentUserId: string | null): Promise<FeedPost | null> {
@@ -119,12 +145,21 @@ export async function getPost(postId: number, currentUserId: string | null): Pro
   return mapRow(row, liked.has(row.id))
 }
 
-export async function getPostsByUser(userId: string, currentUserId: string | null): Promise<FeedPost[]> {
+// Posts for a profile view. `includePrivate` only when viewing your own profile.
+export async function getPostsByUser(
+  userId: string,
+  currentUserId: string | null,
+  includePrivate = false,
+): Promise<FeedPost[]> {
+  const where = includePrivate
+    ? eq(posts.userId, userId)
+    : and(eq(posts.userId, userId), eq(posts.isShared, true))
+
   const rows = await db
     .select(baseSelect)
     .from(posts)
     .leftJoin(profiles, eq(profiles.userId, posts.userId))
-    .where(eq(posts.userId, userId))
+    .where(where)
     .orderBy(desc(posts.createdAt))
 
   const liked = await likedSet(
@@ -132,6 +167,32 @@ export async function getPostsByUser(userId: string, currentUserId: string | nul
     rows.map((r) => r.id),
   )
   return rows.map((r) => mapRow(r, liked.has(r.id)))
+}
+
+export type YardTask = {
+  id: number
+  label: string
+  detail: string | null
+  category: string | null
+  impact: string | null
+  done: boolean
+}
+
+export async function getTasks(postId: string | number): Promise<YardTask[]> {
+  const id = typeof postId === "string" ? Number(postId) : postId
+  const rows = await db
+    .select({
+      id: yardTasks.id,
+      label: yardTasks.label,
+      detail: yardTasks.detail,
+      category: yardTasks.category,
+      impact: yardTasks.impact,
+      done: yardTasks.done,
+    })
+    .from(yardTasks)
+    .where(eq(yardTasks.postId, id))
+    .orderBy(asc(yardTasks.done), asc(yardTasks.sortOrder), asc(yardTasks.id))
+  return rows.map((r) => ({ ...r, done: !!r.done }))
 }
 
 export type CommentRow = {
@@ -180,6 +241,7 @@ export type LeaderRow = {
   totalImpact: number
 }
 
+// Leaderboard ranks only SHARED yards — competing is opt-in.
 export async function getLeaderboard(): Promise<LeaderRow[]> {
   const rows = await db
     .select({
@@ -194,7 +256,7 @@ export async function getLeaderboard(): Promise<LeaderRow[]> {
       totalImpact: sql<number>`coalesce(sum(${posts.regenScore}), 0)`,
     })
     .from(profiles)
-    .leftJoin(posts, eq(posts.userId, profiles.userId))
+    .leftJoin(posts, and(eq(posts.userId, profiles.userId), eq(posts.isShared, true)))
     .groupBy(profiles.userId, profiles.displayName, profiles.handle, profiles.avatarUrl, profiles.locationLabel)
     .orderBy(desc(sql`coalesce(sum(${posts.regenScore}), 0)`))
     .limit(50)
@@ -219,7 +281,11 @@ export async function getProfileByHandle(handle: string) {
   return profile ?? null
 }
 
-export async function getProfileStats(userId: string) {
+// Profile stats. `includePrivate` only for the owner's own view.
+export async function getProfileStats(userId: string, includePrivate = false) {
+  const where = includePrivate
+    ? eq(posts.userId, userId)
+    : and(eq(posts.userId, userId), eq(posts.isShared, true))
   const [stats] = await db
     .select({
       postCount: sql<number>`count(${posts.id})`,
@@ -228,11 +294,57 @@ export async function getProfileStats(userId: string) {
       totalImpact: sql<number>`coalesce(sum(${posts.regenScore}), 0)`,
     })
     .from(posts)
-    .where(eq(posts.userId, userId))
+    .where(where)
   return {
     postCount: Number(stats?.postCount ?? 0),
     bestScore: Number(stats?.bestScore ?? 0),
     avgScore: Number(stats?.avgScore ?? 0),
     totalImpact: Number(stats?.totalImpact ?? 0),
+  }
+}
+
+// Dashboard summary for the signed-in grower.
+export type DashboardSummary = {
+  yardCount: number
+  sharedCount: number
+  latestScore: number | null
+  bestScore: number
+  firstScore: number | null
+  openTasks: number
+  doneTasks: number
+}
+
+export async function getDashboardSummary(userId: string): Promise<DashboardSummary> {
+  const [agg] = await db
+    .select({
+      yardCount: sql<number>`count(${posts.id})`,
+      sharedCount: sql<number>`coalesce(sum(case when ${posts.isShared} then 1 else 0 end), 0)`,
+      bestScore: sql<number>`coalesce(max(${posts.regenScore}), 0)`,
+    })
+    .from(posts)
+    .where(eq(posts.userId, userId))
+
+  const ordered = await db
+    .select({ regenScore: posts.regenScore })
+    .from(posts)
+    .where(eq(posts.userId, userId))
+    .orderBy(asc(posts.createdAt))
+
+  const [taskAgg] = await db
+    .select({
+      openTasks: sql<number>`coalesce(sum(case when ${yardTasks.done} then 0 else 1 end), 0)`,
+      doneTasks: sql<number>`coalesce(sum(case when ${yardTasks.done} then 1 else 0 end), 0)`,
+    })
+    .from(yardTasks)
+    .where(eq(yardTasks.userId, userId))
+
+  return {
+    yardCount: Number(agg?.yardCount ?? 0),
+    sharedCount: Number(agg?.sharedCount ?? 0),
+    latestScore: ordered.length ? ordered[ordered.length - 1].regenScore : null,
+    bestScore: Number(agg?.bestScore ?? 0),
+    firstScore: ordered.length ? ordered[0].regenScore : null,
+    openTasks: Number(taskAgg?.openTasks ?? 0),
+    doneTasks: Number(taskAgg?.doneTasks ?? 0),
   }
 }

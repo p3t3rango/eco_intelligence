@@ -2,7 +2,13 @@ import type { YardAnalysis } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { Eye, Leaf, Sprout, Bird, CheckCircle2 } from "lucide-react"
 
-export function AnalysisPanel({ analysis }: { analysis: YardAnalysis }) {
+export function AnalysisPanel({
+  analysis,
+  hideRecommendations = false,
+}: {
+  analysis: YardAnalysis
+  hideRecommendations?: boolean
+}) {
   return (
     <div className="space-y-6">
       {analysis.observations.length > 0 && (
@@ -18,7 +24,7 @@ export function AnalysisPanel({ analysis }: { analysis: YardAnalysis }) {
         </Section>
       )}
 
-      {analysis.recommendations.length > 0 && (
+      {!hideRecommendations && analysis.recommendations.length > 0 && (
         <Section icon={Sprout} title="Regenerative next steps">
           <ul className="space-y-2.5">
             {analysis.recommendations.map((r, i) => (

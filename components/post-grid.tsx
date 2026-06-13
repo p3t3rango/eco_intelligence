@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import type { FeedPost } from "@/lib/queries"
 import { ScoreRing } from "@/components/score-ring"
+import { Lock } from "lucide-react"
 
 export function PostGrid({ posts }: { posts: FeedPost[] }) {
   if (posts.length === 0) {
@@ -27,9 +28,14 @@ export function PostGrid({ posts }: { posts: FeedPost[] }) {
             height={300}
             className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute right-2 top-2 rounded-xl bg-background/85 p-1 backdrop-blur-sm">
+          <div className="glass absolute right-2 top-2 rounded-xl p-1">
             <ScoreRing score={post.regenScore} size={48} stroke={5} label="" />
           </div>
+          {!post.isShared ? (
+            <span className="glass absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" />
+            </span>
+          ) : null}
         </Link>
       ))}
     </div>

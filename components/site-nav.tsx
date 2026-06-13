@@ -5,7 +5,7 @@ import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
-import { Home, Trophy, Sprout, User, LogOut } from "lucide-react"
+import { Home, Trophy, Sprout, User, LogOut, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 type NavUser = {
@@ -15,12 +15,10 @@ type NavUser = {
 }
 
 const links = [
-  { href: "/", label: "Feed", icon: Home },
+  { href: "/", label: "My Yard", icon: Home },
+  { href: "/community", label: "Community", icon: Users },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { href: "/grow", label: "Analyze", icon: Sprout },
 ]
-
-const mobileLinks = [...links, { href: "/profile", label: "Profile", icon: User }]
 
 export function SiteNav({ user }: { user: NavUser | null }) {
   const pathname = usePathname()
@@ -68,6 +66,13 @@ export function SiteNav({ user }: { user: NavUser | null }) {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/grow"
+            className="hidden items-center gap-1.5 rounded-full bg-[linear-gradient(105deg,var(--primary),oklch(0.6_0.16_120)_55%,var(--accent))] px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-all hover:glow-primary sm:flex"
+          >
+            <Sprout className="h-4 w-4" />
+            Analyze
+          </Link>
           {user ? (
             <>
               <Link href="/profile" className="flex items-center gap-2">
@@ -95,33 +100,57 @@ export function SiteNav({ user }: { user: NavUser | null }) {
         </div>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="glass fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border/50 py-2 sm:hidden">
-        {mobileLinks.map((link) => {
-          const active = pathname === link.href
-          const Icon = link.icon
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "relative flex flex-col items-center gap-1 rounded-xl px-4 py-1 text-xs font-medium transition-colors",
-                active ? "text-primary" : "text-muted-foreground",
-              )}
-            >
-              <span
-                className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200",
-                  active && "bg-primary/12 ring-1 ring-primary/25",
-                )}
-              >
-                <Icon className="h-5 w-5" />
-              </span>
-              {link.label}
-            </Link>
-          )
-        })}
+      {/* Mobile bottom nav with a standout center Analyze action */}
+      <nav className="glass fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border/50 px-1 py-2 sm:hidden">
+        <MobileTab href="/" label="My Yard" icon={Home} active={pathname === "/"} />
+        <MobileTab href="/community" label="Community" icon={Users} active={pathname === "/community"} />
+
+        <Link
+          href="/grow"
+          className="flex flex-col items-center gap-1 text-xs font-semibold text-primary"
+          aria-label="Analyze a yard"
+        >
+          <span className="-mt-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--primary),var(--accent))] text-primary-foreground shadow-lift ring-4 ring-background">
+            <Sprout className="h-6 w-6" />
+          </span>
+          <span className="-mt-1">Analyze</span>
+        </Link>
+
+        <MobileTab href="/leaderboard" label="Ranks" icon={Trophy} active={pathname === "/leaderboard"} />
+        <MobileTab href="/profile" label="Profile" icon={User} active={pathname === "/profile"} />
       </nav>
     </header>
+  )
+}
+
+function MobileTab({
+  href,
+  label,
+  icon: Icon,
+  active,
+}: {
+  href: string
+  label: string
+  icon: typeof Home
+  active: boolean
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex flex-col items-center gap-1 rounded-xl px-2 py-1 text-xs font-medium transition-colors",
+        active ? "text-primary" : "text-muted-foreground",
+      )}
+    >
+      <span
+        className={cn(
+          "flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200",
+          active && "bg-primary/12 ring-1 ring-primary/25",
+        )}
+      >
+        <Icon className="h-5 w-5" />
+      </span>
+      {label}
+    </Link>
   )
 }

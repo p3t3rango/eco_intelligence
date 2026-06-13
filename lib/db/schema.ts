@@ -74,7 +74,11 @@ export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   userId: text("userId").notNull(),
   imageUrl: text("imageUrl").notNull(),
+  title: text("title"),
   caption: text("caption"),
+  // Privacy: analyses are private by default; sharing to the community is opt-in.
+  isShared: boolean("isShared").notNull().default(false),
+  sharedAt: timestamp("sharedAt"),
   locationLabel: text("locationLabel"),
   lat: text("lat"),
   lng: text("lng"),
@@ -106,4 +110,19 @@ export const comments = pgTable("comments", {
   postId: integer("postId").notNull(),
   body: text("body").notNull(),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
+// Trackable action-plan items generated from the AI recommendations.
+export const yardTasks = pgTable("yard_tasks", {
+  id: serial("id").primaryKey(),
+  userId: text("userId").notNull(),
+  postId: integer("postId").notNull(),
+  label: text("label").notNull(),
+  detail: text("detail"),
+  category: text("category"),
+  impact: text("impact"),
+  done: boolean("done").notNull().default(false),
+  sortOrder: integer("sortOrder").notNull().default(0),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  completedAt: timestamp("completedAt"),
 })

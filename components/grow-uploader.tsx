@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Camera, ImagePlus, Loader2, MapPin, Sparkles, X } from "lucide-react"
+import { Camera, ImagePlus, Loader2, Lock, MapPin, Sparkles, X } from "lucide-react"
 
 export function GrowUploader({ defaultLocation }: { defaultLocation: string }) {
   const router = useRouter()
@@ -16,6 +16,7 @@ export function GrowUploader({ defaultLocation }: { defaultLocation: string }) {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
+  const [title, setTitle] = useState("")
   const [caption, setCaption] = useState("")
   const [location, setLocation] = useState(defaultLocation)
   const [error, setError] = useState<string | null>(null)
@@ -43,6 +44,7 @@ export function GrowUploader({ defaultLocation }: { defaultLocation: string }) {
     setError(null)
     const formData = new FormData()
     formData.append("image", file)
+    formData.append("title", title)
     formData.append("caption", caption)
     formData.append("locationLabel", location)
 
@@ -124,7 +126,18 @@ export function GrowUploader({ defaultLocation }: { defaultLocation: string }) {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="caption">Caption</Label>
+        <Label htmlFor="title">Name this spot</Label>
+        <Input
+          id="title"
+          placeholder="Back garden, front yard, balcony…"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={isPending}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="caption">Notes (optional)</Label>
         <Textarea
           id="caption"
           placeholder="What did you plant, change, or notice?"
@@ -155,7 +168,7 @@ export function GrowUploader({ defaultLocation }: { defaultLocation: string }) {
         </p>
       ) : null}
 
-      <Button onClick={submit} disabled={isPending || !file} size="lg" className="w-full">
+      <Button onClick={submit} disabled={isPending || !file} variant="gradient" size="lg" className="w-full">
         {isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -164,10 +177,15 @@ export function GrowUploader({ defaultLocation }: { defaultLocation: string }) {
         ) : (
           <>
             <Sparkles className="h-4 w-4" />
-            Analyze &amp; share
+            Analyze my yard
           </>
         )}
       </Button>
+
+      <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+        <Lock className="h-3.5 w-3.5" />
+        Saved privately to your yard. You can share it for feedback anytime.
+      </p>
     </div>
   )
 }

@@ -14,8 +14,8 @@ export default async function MyProfilePage() {
   if (!profile) redirect("/sign-in")
 
   const [stats, posts] = await Promise.all([
-    getProfileStats(profile.userId),
-    getPostsByUser(profile.userId, session.user.id),
+    getProfileStats(profile.userId, true),
+    getPostsByUser(profile.userId, session.user.id, true),
   ])
 
   return (
