@@ -33,9 +33,14 @@ export async function ensureProfile() {
       displayName: session.user.name || "New Gardener",
       handle,
     })
+    .onConflictDoNothing()
     .returning()
 
-  return created
+  if (created) return created
+
+  // Another concurrent request created it first; fetch the winner.
+  const [winner] = await db.select().from(profiles).where(eq(profiles.userId, session.user.id)).limit(1)
+  return winner ?? null
 }
 
 export async function updateProfile(formData: FormData) {

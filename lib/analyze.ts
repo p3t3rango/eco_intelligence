@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import type { YardAnalysis, ScoreKey } from "@/lib/types"
 
-const MODEL = "gemini-2.0-flash"
+const MODEL = "gemini-flash-latest"
 
 function clampScore(n: unknown): number {
   const v = typeof n === "number" ? n : Number(n)
@@ -55,7 +55,10 @@ export async function analyzeYard(opts: {
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured")
 
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: MODEL })
+  const model = genAI.getGenerativeModel({
+    model: MODEL,
+    generationConfig: { responseMimeType: "application/json" },
+  })
 
   const result = await model.generateContent([
     buildPrompt(opts),
