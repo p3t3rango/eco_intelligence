@@ -62,7 +62,7 @@ export function ProfileHeader({
       <div className="relative mt-5 grid grid-cols-3 gap-3 border-t border-border pt-4">
         <Stat label="Total impact" value={stats.totalImpact} highlight />
         <Stat label="Best score" value={stats.bestScore} />
-        <Stat label="Yards shared" value={stats.postCount} />
+        <Stat label="Yards" value={stats.postCount} />
       </div>
     </div>
   )
