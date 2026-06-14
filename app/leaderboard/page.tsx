@@ -9,9 +9,9 @@ import { Trophy, MapPin, Sprout } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const RANK_STYLES = [
-  "bg-accent/15 text-accent ring-1 ring-accent/30",
-  "bg-muted text-foreground/70 ring-1 ring-border",
-  "bg-clay/15 text-clay ring-1 ring-clay/30",
+  "bg-lime/20 text-foreground ring-1 ring-lime/50 glow-accent",
+  "bg-cyan/20 text-foreground ring-1 ring-cyan/50",
+  "bg-coral/20 text-coral ring-1 ring-coral/50",
 ]
 
 export default async function LeaderboardPage() {
@@ -31,20 +31,20 @@ export default async function LeaderboardPage() {
       />
       <main className="mx-auto max-w-2xl px-4 py-6">
         <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/15 text-accent">
+          <span className="bg-primary glow-accent flex h-12 w-12 items-center justify-center rounded-2xl text-primary-foreground">
             <Trophy className="h-6 w-6" />
           </span>
           <div>
-            <h1 className="font-serif text-2xl font-semibold text-foreground">Regeneration Leaders</h1>
+            <h1 className="font-serif text-3xl font-extrabold text-foreground">Regeneration Leaders</h1>
             <p className="text-sm text-muted-foreground">Ranked by total ecological impact across all shared land.</p>
           </div>
         </div>
 
         {leaders.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card/60 py-16 text-center">
+          <div className="bg-leaf-dots flex flex-col items-center gap-3 rounded-3xl border border-border/70 bg-card/60 py-16 text-center shadow-soft">
             <Sprout className="h-8 w-8 text-primary" />
             <p className="text-sm text-muted-foreground">No scores yet. Be the first to plant the flag.</p>
-            <Link href="/grow" className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground">
+            <Link href="/grow" className="bg-primary lift rounded-full px-6 py-3 text-sm font-bold text-primary-foreground shadow-soft hover:glow-primary">
               Analyze your yard
             </Link>
           </div>
@@ -57,14 +57,14 @@ export default async function LeaderboardPage() {
                   <Link
                     href={`/u/${leader.handle}`}
                     className={cn(
-                      "lift flex items-center gap-4 rounded-2xl border bg-card p-4 shadow-soft",
-                      isMe ? "border-primary/40 ring-1 ring-primary/20" : "border-border/70",
+                      "lift flex items-center gap-4 rounded-3xl border bg-card p-4 shadow-soft",
+                      isMe ? "border-primary/50 ring-2 ring-primary/25" : "border-border/70",
                     )}
                   >
                     <span
                       className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-serif text-lg font-bold",
-                        i < 3 ? RANK_STYLES[i] : "text-muted-foreground",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl font-serif text-lg font-extrabold",
+                        i < 3 ? RANK_STYLES[i] : "bg-muted text-muted-foreground",
                       )}
                     >
                       {i + 1}
@@ -92,7 +92,7 @@ export default async function LeaderboardPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-gradient font-serif text-2xl font-bold">{leader.totalImpact}</div>
+                      <div className="text-primary font-serif text-2xl font-bold">{leader.totalImpact}</div>
                       <div className="text-[11px] text-muted-foreground">
                         {leader.postCount} {leader.postCount === 1 ? "yard" : "yards"} · best {leader.bestScore}
                       </div>

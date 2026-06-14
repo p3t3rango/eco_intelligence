@@ -112,8 +112,8 @@ export function PostCard({ post }: { post: FeedPost }) {
             onClick={onLike}
             disabled={isPending}
             className={cn(
-              "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors",
-              liked ? "bg-clay/10 text-clay" : "text-muted-foreground hover:bg-clay/10 hover:text-clay",
+              "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold transition-colors",
+              liked ? "bg-coral/15 text-coral" : "text-muted-foreground hover:bg-coral/15 hover:text-coral",
             )}
             aria-pressed={liked}
             aria-label="Cheer this garden"
@@ -123,7 +123,7 @@ export function PostCard({ post }: { post: FeedPost }) {
           </button>
           <Link
             href={`/post/${post.id}`}
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
             <MessageCircle className="h-5 w-5" />
             {post.commentCount}

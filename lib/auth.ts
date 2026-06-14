@@ -29,11 +29,12 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
   },
-  ...(process.env.NODE_ENV === 'development'
+  // In the v0 preview iframe (cross-site) we must force secure cross-site
+  // cookies. On a plain http://localhost dev server, secure cookies are NOT
+  // stored by the browser, so use lax/non-secure there instead.
+  ...(process.env.NODE_ENV === 'development' && process.env.V0_RUNTIME_URL
     ? {
         advanced: {
-          // In dev (v0 preview iframe), force cross-site cookies so the
-          // session cookie is stored by the browser.
           defaultCookieAttributes: {
             sameSite: 'none' as const,
             secure: true,

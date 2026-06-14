@@ -3,15 +3,24 @@
 import { db } from "@/lib/db"
 import { posts, profiles, yardTasks } from "@/lib/db/schema"
 import { getUserId } from "@/lib/session"
-import { analyzeYard } from "@/lib/analyze"
+import { readYard, planYard } from "@/lib/analyze"
+import { getLocalEcology, getPlantImages } from "@/lib/ecology"
 import { geocodePlace } from "@/lib/geo"
-import { put } from "@vercel/blob"
+import { storeYardImage } from "@/lib/blob"
+import { renderTransformed, planLayout } from "@/lib/visualize"
+import type { GoalKey, YardAnalysis, YardReading, PlantingMarker } from "@/lib/types"
 import { and, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
-export type CreatePostResult = { ok: true; postId: number } | { ok: false; error: string }
+export type CreateReadingResult =
+  | { ok: true; postId: number; reading: YardReading }
+  | { ok: false; error: string }
 
-export async function createPost(formData: FormData): Promise<CreatePostResult> {
+/**
+ * Step 1 — "The Read". Upload the photo, resolve location, run the ecological
+ * reading (no plan yet), and save a draft post the grower can then set goals on.
+ */
+export async function createReading(formData: FormData): Promise<CreateReadingResult> {
   let userId: string
   try {
     userId = await getUserId()
@@ -40,6 +49,9 @@ export async function createPost(formData: FormData): Promise<CreatePostResult> 
       lat = String(geo.lat)
       lng = String(geo.lng)
       climateZone = geo.climateZone
+      // Prefer the friendly geocoded place name (e.g. "Richmond, VA") over a
+      // raw ZIP the user may have typed.
+      if (geo.locationLabel) resolvedLocation = geo.locationLabel
     }
   }
 
@@ -53,41 +65,44 @@ export async function createPost(formData: FormData): Promise<CreatePostResult> 
     }
   }
 
-  // Upload the image to Blob storage.
+  // Store the image (Vercel Blob in prod, local filesystem fallback in dev).
   const bytes = Buffer.from(await file.arrayBuffer())
   const ext = (file.type.split("/")[1] || "jpg").replace("jpeg", "jpg")
   let blob
   try {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      throw new Error("BLOB_READ_WRITE_TOKEN is not set")
-    }
-    blob = await put(`yards/${userId}/${Date.now()}.${ext}`, bytes, {
-      access: "public",
-      contentType: file.type || "image/jpeg",
-    })
+    blob = await storeYardImage(`${userId}/${Date.now()}.${ext}`, bytes, file.type || "image/jpeg")
   } catch (err) {
-    console.log("[v0] blob upload failed:", err instanceof Error ? err.message : err)
-    return {
-      ok: false,
-      error: "Photo storage isn't connected in this preview yet. It will work automatically once the app is published.",
-    }
+    console.log("[ecointelli] image storage failed:", err instanceof Error ? err.message : err)
+    return { ok: false, error: "We couldn't save that photo. Please try again." }
   }
 
-  // Run the Gemini ecological analysis.
-  let analysis
+  // Run the ecological reading.
+  let reading: YardReading
   try {
-    analysis = await analyzeYard({
+    reading = await readYard({
       imageBase64: bytes.toString("base64"),
       mimeType: file.type || "image/jpeg",
       climateZone,
       locationLabel: resolvedLocation,
     })
   } catch (err) {
-    console.log("[v0] analyzeYard failed:", err instanceof Error ? err.message : err)
-    return { ok: false, error: "We couldn't analyze that photo. Please try a clearer outdoor photo." }
+    console.log("[ecointelli] readYard failed:", err instanceof Error ? err.message : err)
+    return { ok: false, error: "We couldn't read that photo. Please try a clearer outdoor photo." }
   }
 
-  // Analyses are PRIVATE by default. Sharing to the community is opt-in.
+  const analysis: YardAnalysis = {
+    summary: reading.summary,
+    regenScore: reading.regenScore,
+    scores: reading.scores,
+    observations: reading.observations,
+    recommendations: [],
+    plants: [],
+    wildlife: reading.wildlife,
+    climateZone: reading.climateZone,
+    detected: reading.detected,
+    goals: [],
+  }
+
   const [created] = await db
     .insert(posts)
     .values({
@@ -96,29 +111,134 @@ export async function createPost(formData: FormData): Promise<CreatePostResult> 
       title: title || null,
       caption: caption || null,
       isShared: false,
+      status: "reading",
+      goals: [],
       locationLabel: resolvedLocation || null,
       lat,
       lng,
       climateZone,
-      regenScore: analysis.regenScore,
-      biodiversityScore: analysis.scores.biodiversity,
-      pollinatorScore: analysis.scores.pollinator,
-      sunlightScore: analysis.scores.sunlight,
-      soilScore: analysis.scores.soil,
-      foodScore: analysis.scores.food,
-      waterScore: analysis.scores.water,
+      regenScore: reading.regenScore,
+      biodiversityScore: reading.scores.biodiversity,
+      pollinatorScore: reading.scores.pollinator,
+      sunlightScore: reading.scores.sunlight,
+      soilScore: reading.scores.soil,
+      foodScore: reading.scores.food,
+      waterScore: reading.scores.water,
       analysis,
     })
     .returning({ id: posts.id })
 
-  // Seed a trackable action plan from the AI recommendations.
-  const recs = Array.isArray(analysis.recommendations) ? analysis.recommendations : []
-  if (recs.length > 0) {
+  revalidatePath("/")
+  return { ok: true, postId: created.id, reading }
+}
+
+export type GeneratePlanResult = { ok: true } | { ok: false; error: string }
+
+/**
+ * Step 2 — "The Plan". Given the chosen goals, pull real local ecology
+ * (GBIF/iNaturalist), generate goal-tailored + place-grounded recommendations
+ * and plant picks (with photos), and seed the trackable action plan.
+ */
+export async function generatePlan(
+  postId: number,
+  goals: GoalKey[],
+  detectedOverride?: string[],
+): Promise<GeneratePlanResult> {
+  let userId: string
+  try {
+    userId = await getUserId()
+  } catch {
+    return { ok: false, error: "You must be signed in." }
+  }
+  if (!goals.length) return { ok: false, error: "Pick at least one goal." }
+
+  const [post] = await db
+    .select()
+    .from(posts)
+    .where(and(eq(posts.id, postId), eq(posts.userId, userId)))
+    .limit(1)
+  if (!post) return { ok: false, error: "Yard not found." }
+
+  const stored = (post.analysis ?? {}) as YardAnalysis
+  const reading: YardReading = {
+    summary: stored.summary ?? "",
+    regenScore: stored.regenScore ?? post.regenScore,
+    scores: stored.scores ?? {
+      biodiversity: post.biodiversityScore,
+      pollinator: post.pollinatorScore,
+      sunlight: post.sunlightScore,
+      soil: post.soilScore,
+      food: post.foodScore,
+      water: post.waterScore,
+    },
+    observations: stored.observations ?? [],
+    detected: detectedOverride ?? stored.detected ?? [],
+    wildlife: stored.wildlife ?? [],
+    climateZone: stored.climateZone ?? post.climateZone,
+  }
+
+  // Pull real local ecology (best-effort; degrades to empty).
+  const lat = post.lat ? Number(post.lat) : NaN
+  const lng = post.lng ? Number(post.lng) : NaN
+  const localContext = await getLocalEcology(lat, lng)
+
+  let plan
+  try {
+    plan = await planYard({
+      reading,
+      goals,
+      localContext,
+      locationLabel: post.locationLabel,
+      climateZone: post.climateZone,
+    })
+  } catch (err) {
+    console.log("[ecointelli] planYard failed:", err instanceof Error ? err.message : err)
+    return { ok: false, error: "We couldn't build your plan. Please try again." }
+  }
+
+  // Enrich plant picks with real photos (best-effort).
+  try {
+    const images = await getPlantImages(plan.plants.map((p) => p.name))
+    plan.plants = plan.plants.map((p) => {
+      const img = images[p.name]
+      return img ? { ...p, imageUrl: img.imageUrl, imageAttribution: img.attribution } : p
+    })
+  } catch {
+    /* photos are optional */
+  }
+
+  const analysis: YardAnalysis = {
+    ...stored,
+    summary: reading.summary,
+    regenScore: reading.regenScore,
+    scores: reading.scores,
+    observations: reading.observations,
+    wildlife: reading.wildlife,
+    climateZone: reading.climateZone,
+    detected: reading.detected,
+    recommendations: plan.recommendations.map((r) => r.title),
+    plants: plan.plants,
+    goals,
+    plan,
+  }
+
+  await db
+    .update(posts)
+    // Clear any prior visualization — it's based on the old plant list.
+    .set({ analysis, goals, status: "complete", renderUrl: null, layout: null })
+    .where(and(eq(posts.id, postId), eq(posts.userId, userId)))
+
+  // Reset + seed the trackable action plan from the grounded recommendations.
+  await db.delete(yardTasks).where(and(eq(yardTasks.postId, postId), eq(yardTasks.userId, userId)))
+  if (plan.recommendations.length > 0) {
     await db.insert(yardTasks).values(
-      recs.slice(0, 12).map((label, i) => ({
+      plan.recommendations.slice(0, 12).map((r, i) => ({
         userId,
-        postId: created.id,
-        label,
+        postId,
+        label: r.title,
+        detail: r.why,
+        category: r.goal,
+        impact: r.impact ?? null,
         sortOrder: i,
       })),
     )
@@ -126,8 +246,86 @@ export async function createPost(formData: FormData): Promise<CreatePostResult> 
 
   revalidatePath("/")
   revalidatePath("/profile")
+  revalidatePath(`/post/${postId}`)
+  return { ok: true }
+}
 
-  return { ok: true, postId: created.id }
+/** Remove a plant the grower doesn't want from their plan. */
+export async function dismissPlant(postId: number, plantName: string): Promise<{ ok: boolean }> {
+  let userId: string
+  try {
+    userId = await getUserId()
+  } catch {
+    return { ok: false }
+  }
+  const [post] = await db
+    .select()
+    .from(posts)
+    .where(and(eq(posts.id, postId), eq(posts.userId, userId)))
+    .limit(1)
+  if (!post) return { ok: false }
+
+  const analysis = (post.analysis ?? {}) as YardAnalysis
+  analysis.plants = (analysis.plants ?? []).filter((p) => p.name !== plantName)
+  if (analysis.plan) {
+    analysis.plan = { ...analysis.plan, plants: analysis.plan.plants.filter((p) => p.name !== plantName) }
+  }
+
+  await db.update(posts).set({ analysis }).where(and(eq(posts.id, postId), eq(posts.userId, userId)))
+  revalidatePath(`/post/${postId}`)
+  return { ok: true }
+}
+
+export type VisualizeResult =
+  | { ok: true; view: "render"; renderUrl: string }
+  | { ok: true; view: "map"; markers: PlantingMarker[] }
+  | { ok: false; error: string }
+
+/**
+ * Phase 3 — generate a planting visualization on demand. `render` re-renders
+ * the yard photo with the plants grown in; `map` returns marker placements for
+ * the interactive planting map. Results are cached on the post.
+ */
+export async function generateVisualization(
+  postId: number,
+  view: "render" | "map",
+): Promise<VisualizeResult> {
+  let userId: string
+  try {
+    userId = await getUserId()
+  } catch {
+    return { ok: false, error: "You must be signed in." }
+  }
+
+  const [post] = await db
+    .select()
+    .from(posts)
+    .where(and(eq(posts.id, postId), eq(posts.userId, userId)))
+    .limit(1)
+  if (!post) return { ok: false, error: "Yard not found." }
+
+  const analysis = (post.analysis ?? {}) as YardAnalysis
+  const plan = analysis.plan
+  if (!plan || plan.plants.length === 0) {
+    return { ok: false, error: "Build your plan first so we know what to plant." }
+  }
+
+  try {
+    if (view === "render") {
+      const renderUrl = await renderTransformed({ imageUrl: post.imageUrl, plan, userId })
+      await db.update(posts).set({ renderUrl }).where(eq(posts.id, postId))
+      revalidatePath(`/post/${postId}`)
+      return { ok: true, view: "render", renderUrl }
+    } else {
+      const markers = await planLayout({ imageUrl: post.imageUrl, plan })
+      await db.update(posts).set({ layout: { markers } }).where(eq(posts.id, postId))
+      revalidatePath(`/post/${postId}`)
+      return { ok: true, view: "map", markers }
+    }
+  } catch (err) {
+    console.log("[ecointelli] generateVisualization failed:", err instanceof Error ? err.message : err)
+    return { ok: false, error: "We couldn't generate that view. Please try again." }
+  }
 }
 
 export async function setShared(postId: number, shared: boolean) {
@@ -164,7 +362,6 @@ export async function addTask(postId: number, label: string) {
   const userId = await getUserId()
   const trimmed = label.trim()
   if (!trimmed) return
-  // Verify the post belongs to the user before attaching a task.
   const [own] = await db
     .select({ id: posts.id })
     .from(posts)

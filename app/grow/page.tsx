@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
 import { ensureProfile } from "@/app/actions/profile"
 import { SiteNav } from "@/components/site-nav"
-import { GrowUploader } from "@/components/grow-uploader"
+import { GrowWizard } from "@/components/grow-wizard"
 import { Sprout } from "lucide-react"
 
 export default async function GrowPage() {
@@ -19,19 +19,21 @@ export default async function GrowPage() {
           avatarUrl: profile?.avatarUrl ?? null,
         }}
       />
-      <main className="mx-auto max-w-xl px-4 py-6">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Sprout className="h-6 w-6" />
+      <main className="mx-auto max-w-xl px-4 py-8">
+        <div className="animate-rise mb-8 flex items-center gap-4">
+          <span className="bg-primary glow-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-primary-foreground">
+            <Sprout className="h-7 w-7" />
           </span>
           <div>
-            <h1 className="font-serif text-2xl font-semibold text-foreground">Analyze your yard</h1>
-            <p className="text-sm text-muted-foreground">
-              AI reads sunlight, biodiversity, pollinators, soil, food &amp; water.
+            <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground">
+              Meet your yard
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              First we read what&apos;s there — then you choose what you want it to become.
             </p>
           </div>
         </div>
-        <GrowUploader defaultLocation={profile?.locationLabel ?? ""} />
+        <GrowWizard defaultLocation={profile?.locationLabel ?? ""} />
       </main>
     </div>
   )

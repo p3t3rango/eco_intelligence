@@ -92,8 +92,15 @@ export const posts = pgTable("posts", {
   soilScore: integer("soilScore").notNull().default(0),
   foodScore: integer("foodScore").notNull().default(0),
   waterScore: integer("waterScore").notNull().default(0),
-  // Full structured AI analysis
+  // Full structured AI analysis (reading + plan)
   analysis: jsonb("analysis"),
+  // Phase 2: the grower's chosen goals (GoalKey[]) and flow state.
+  goals: jsonb("goals").$type<string[]>().default([]),
+  // "reading" once the photo is analyzed; "complete" once goals + plan exist.
+  status: text("status").notNull().default("complete"),
+  // Phase 3: AI planting visualization.
+  renderUrl: text("renderUrl"), // Gemini-transformed "here's your yard" image
+  layout: jsonb("layout"), // { markers: PlantingMarker[] } for the planting map
   createdAt: timestamp("createdAt").notNull().defaultNow(),
 })
 

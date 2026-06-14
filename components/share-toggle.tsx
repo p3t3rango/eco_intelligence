@@ -40,7 +40,7 @@ export function ShareToggle({
         className={cn(
           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
           shared
-            ? "bg-primary/12 text-primary ring-1 ring-primary/25"
+            ? "bg-primary/15 text-primary ring-1 ring-primary/25"
             : "bg-muted text-muted-foreground ring-1 ring-border",
         )}
         aria-pressed={shared}
@@ -62,10 +62,10 @@ export function ShareToggle({
       onClick={toggle}
       disabled={isPending}
       className={cn(
-        "flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all active:scale-[0.98]",
+        "flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all active:scale-[0.96]",
         shared
-          ? "border border-border bg-card text-foreground hover:bg-secondary"
-          : "bg-[linear-gradient(105deg,var(--primary),oklch(0.6_0.16_120)_55%,var(--accent))] text-primary-foreground shadow-soft hover:glow-primary",
+          ? "border-2 border-border bg-card text-foreground hover:border-primary/40 hover:bg-secondary"
+          : "bg-primary text-primary-foreground shadow-soft hover:glow-primary hover:-translate-y-0.5",
       )}
       aria-pressed={shared}
     >

@@ -28,16 +28,17 @@ export function ProfileHeader({
   action?: React.ReactNode
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="flex items-start gap-4">
-        <Avatar className="h-20 w-20 border border-border">
+    <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-soft animate-rise">
+      <div className="bg-sun-rays pointer-events-none absolute inset-x-0 -top-10 h-32" aria-hidden />
+      <div className="relative flex items-start gap-4">
+        <Avatar className="h-20 w-20 border-2 border-primary/30 shadow-soft">
           <AvatarImage src={profile.avatarUrl ?? undefined} alt={profile.displayName} />
-          <AvatarFallback className="text-2xl">{profile.displayName.charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="bg-secondary text-2xl text-secondary-foreground">{profile.displayName.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h1 className="font-serif text-2xl font-semibold leading-tight text-foreground">
+              <h1 className="text-foreground font-display text-3xl font-extrabold leading-tight">
                 {profile.displayName}
               </h1>
               <p className="text-sm text-muted-foreground">@{profile.handle}</p>
@@ -56,9 +57,9 @@ export function ProfileHeader({
         </div>
       </div>
 
-      {profile.bio ? <p className="mt-4 text-pretty text-sm leading-relaxed text-foreground/90">{profile.bio}</p> : null}
+      {profile.bio ? <p className="relative mt-4 text-pretty text-sm leading-relaxed text-foreground/90">{profile.bio}</p> : null}
 
-      <div className="mt-5 grid grid-cols-3 gap-3 border-t border-border pt-4">
+      <div className="relative mt-5 grid grid-cols-3 gap-3 border-t border-border pt-4">
         <Stat label="Total impact" value={stats.totalImpact} highlight />
         <Stat label="Best score" value={stats.bestScore} />
         <Stat label="Yards shared" value={stats.postCount} />
@@ -69,9 +70,9 @@ export function ProfileHeader({
 
 function Stat({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
   return (
-    <div className="text-center">
-      <div className={`font-serif text-2xl font-bold ${highlight ? "text-primary" : "text-foreground"}`}>{value}</div>
-      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
+    <div className="rounded-2xl bg-secondary/40 py-3 text-center">
+      <div className={`font-display text-3xl font-extrabold ${highlight ? "text-primary" : "text-foreground"}`}>{value}</div>
+      <div className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
     </div>
   )
 }

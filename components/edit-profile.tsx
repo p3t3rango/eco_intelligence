@@ -41,9 +41,9 @@ export function EditProfile({ profile }: { profile: Profile }) {
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 p-0 backdrop-blur-sm sm:items-center sm:p-4">
       <form
         action={action}
-        className="w-full max-w-md space-y-4 rounded-t-2xl border border-border bg-card p-6 sm:rounded-2xl"
+        className="w-full max-w-md space-y-4 rounded-t-3xl border border-border bg-card p-6 shadow-lift animate-rise sm:rounded-3xl"
       >
-        <h2 className="font-serif text-xl font-semibold text-foreground">Edit profile</h2>
+        <h2 className="font-display text-2xl font-extrabold text-foreground">Edit profile</h2>
         <div className="space-y-2">
           <Label htmlFor="displayName">Display name</Label>
           <Input id="displayName" name="displayName" defaultValue={profile.displayName} required />

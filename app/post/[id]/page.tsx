@@ -8,8 +8,11 @@ import type { YardAnalysis } from "@/lib/types"
 import { SiteNav } from "@/components/site-nav"
 import { ScoreRing } from "@/components/score-ring"
 import { MetricBars } from "@/components/metric-bars"
-import { AnalysisPanel } from "@/components/analysis-panel"
-import { ActionPlan } from "@/components/action-plan"
+import { GoalsRow, ReadDetails } from "@/components/analysis-panel"
+import { PlanArea } from "@/components/plan-area"
+import { YardVisualizer } from "@/components/yard-visualizer"
+import { RefinePlan } from "@/components/refine-plan"
+import type { GoalKey, YardAnalysis as YardAnalysisType } from "@/lib/types"
 import { ShareToggle } from "@/components/share-toggle"
 import { CommentsSection } from "@/components/comments-section"
 import { LikeButton } from "@/components/like-button"
@@ -48,16 +51,16 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
       <main className="mx-auto max-w-2xl px-4 py-6">
         <Link
           href={isOwner ? "/" : "/community"}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-secondary/60 px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           {isOwner ? "Back to my yard" : "Back to community"}
         </Link>
 
-        <div className="overflow-hidden rounded-3xl border border-border/70 bg-card shadow-soft">
+        <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-lift animate-rise">
           <div className="flex items-center gap-3 p-4">
             <Link href={`/u/${post.author.handle}`}>
-              <Avatar className="h-11 w-11 border border-border">
+              <Avatar className="h-11 w-11 border-2 border-primary/30">
                 <AvatarImage src={post.author.avatarUrl ?? undefined} alt={post.author.displayName} />
                 <AvatarFallback>{post.author.displayName.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
@@ -70,9 +73,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </div>
             {isOwner ? (
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${
                   post.isShared
-                    ? "bg-primary/12 text-primary ring-1 ring-primary/25"
+                    ? "bg-primary/15 text-primary ring-1 ring-primary/25"
                     : "bg-muted text-muted-foreground ring-1 ring-border"
                 }`}
               >
@@ -89,21 +92,22 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             alt={post.title ?? post.caption ?? "Yard photo"}
             width={900}
             height={675}
-            className="aspect-[4/3] w-full object-cover"
+            priority
+            className="aspect-[4/3] w-full bg-muted object-cover"
           />
 
           <div className="space-y-6 p-5">
             {post.title ? (
-              <h1 className="-mb-3 font-serif text-2xl font-semibold leading-tight text-foreground text-balance">
+              <h1 className="-mb-3 font-display text-3xl font-extrabold leading-tight text-foreground text-balance">
                 {post.title}
               </h1>
             ) : null}
 
-            <div className="rounded-2xl border border-border/60 bg-secondary/40 p-4">
+            <div className="bg-bloom rounded-3xl border border-primary/20 p-4 shadow-soft">
               <div className="flex items-center gap-3 sm:gap-4">
                 <ScoreRing score={post.regenScore} size={80} />
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-serif text-lg font-semibold leading-tight text-foreground sm:text-xl">
+                  <h2 className="font-display text-xl font-extrabold leading-tight text-foreground sm:text-2xl">
                     Regenerative Score
                   </h2>
                   {post.locationLabel ? (
@@ -121,8 +125,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
             {post.caption ? <p className="text-pretty leading-relaxed text-foreground">{post.caption}</p> : null}
 
+            {/* ── THE READ — understand the space first ── */}
             {analysis?.summary ? (
-              <div className="bg-bloom rounded-2xl border border-primary/15 p-4">
+              <div className="bg-leaf-dots rounded-organic border border-accent/30 p-4">
                 <div className="mb-1.5 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
                   <Sparkles className="h-4 w-4" />
                   Ecological Read
@@ -133,16 +138,42 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
             <MetricBars scores={post.scores} />
 
-            {/* Owner sees a trackable action plan; visitors see read-only steps. */}
+            {analysis ? <ReadDetails analysis={analysis} /> : null}
+
+            {/* ── YOUR GOALS — the pivot (owner can edit + replan) ── */}
             {isOwner ? (
-              <ActionPlan postId={post.id} tasks={tasks} canEdit />
+              <RefinePlan postId={post.id} initialGoals={(analysis?.goals ?? []) as GoalKey[]} />
+            ) : analysis?.goals && analysis.goals.length > 0 ? (
+              <div className="rounded-organic border border-border/60 bg-secondary/30 p-4">
+                <GoalsRow goals={analysis.goals as GoalKey[]} />
+              </div>
             ) : null}
 
-            {analysis ? <AnalysisPanel analysis={analysis} hideRecommendations={isOwner} /> : null}
+            {/* ── THE PLAN — what to do, grounded in place + goals ── */}
+            {/* Planting visualization — owner only, once a plan exists. */}
+            {isOwner && analysis?.plan && analysis.plan.plants.length > 0 ? (
+              <YardVisualizer
+                postId={post.id}
+                imageUrl={post.imageUrl}
+                initialRenderUrl={post.renderUrl}
+                initialMarkers={post.markers}
+              />
+            ) : null}
+
+            {/* Plan area: goal filter + action steps (owner) + grounded plan + plant picks. */}
+            {analysis ? (
+              <PlanArea
+                postId={post.id}
+                isOwner={isOwner}
+                goals={(analysis.goals ?? []) as GoalKey[]}
+                tasks={tasks}
+                analysis={analysis as YardAnalysisType}
+              />
+            ) : null}
 
             {/* Sharing control for the owner */}
             {isOwner ? (
-              <div className="rounded-2xl border border-border/70 bg-secondary/40 p-4">
+              <div className="rounded-3xl border border-border bg-secondary/40 p-4">
                 <p className="mb-2 text-sm text-muted-foreground">
                   {post.isShared
                     ? "This yard is visible in the community feed and counts toward the leaderboard."

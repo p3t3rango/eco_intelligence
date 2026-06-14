@@ -7,6 +7,7 @@ import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { Home, Trophy, Sprout, User, LogOut, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 type NavUser = {
   displayName: string
@@ -69,11 +70,12 @@ export function SiteNav({ user }: { user: NavUser | null }) {
         <div className="flex items-center gap-3">
           <Link
             href="/grow"
-            className="hidden items-center gap-1.5 rounded-full bg-[linear-gradient(105deg,var(--primary),oklch(0.6_0.16_120)_55%,var(--accent))] px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-all hover:glow-primary sm:flex"
+            className="hidden items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-all hover:glow-primary sm:flex"
           >
             <Sprout className="h-4 w-4" />
             Analyze
           </Link>
+          <ThemeToggle />
           {user ? (
             <>
               <Link href="/profile" className="flex items-center gap-2">
@@ -112,7 +114,7 @@ export function SiteNav({ user }: { user: NavUser | null }) {
           className="flex flex-col items-center gap-1 text-xs font-semibold text-primary"
           aria-label="Analyze a yard"
         >
-          <span className="-mt-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--primary),var(--accent))] text-primary-foreground shadow-lift ring-4 ring-background">
+          <span className="-mt-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lift ring-4 ring-background glow-primary">
             <Sprout className="h-6 w-6" />
           </span>
           <span className="-mt-1">Analyze</span>

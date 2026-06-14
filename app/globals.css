@@ -3,101 +3,123 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Solarpunk palette: warm cream, verdant greens, golden sunlight, terracotta clay */
-  --background: oklch(0.96 0.025 95);
-  --foreground: oklch(0.26 0.045 150);
+  /* ── Refined Neutral (light) ────────────────────────────────────────
+     Calm and premium: near-white neutral surfaces, near-black slate text,
+     with a single refined indigo accent. Color is a seasoning — the pops
+     are low-chroma so the whole UI stays quiet. */
+  --background: oklch(0.985 0.002 270);
+  --foreground: oklch(0.23 0.01 270);
 
-  --card: oklch(0.99 0.012 95);
-  --card-foreground: oklch(0.26 0.045 150);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.23 0.01 270);
 
-  --popover: oklch(0.99 0.012 95);
-  --popover-foreground: oklch(0.26 0.045 150);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.23 0.01 270);
 
-  /* verdant leaf green */
-  --primary: oklch(0.53 0.15 152);
-  --primary-foreground: oklch(0.98 0.02 95);
+  /* the single accent: living leaf green */
+  --primary: oklch(0.57 0.13 152);
+  --primary-foreground: oklch(0.99 0.01 150);
 
-  /* soft mossy secondary */
-  --secondary: oklch(0.91 0.05 132);
-  --secondary-foreground: oklch(0.3 0.07 150);
+  /* neutral surfaces */
+  --secondary: oklch(0.955 0.003 270);
+  --secondary-foreground: oklch(0.3 0.01 270);
 
-  --muted: oklch(0.93 0.035 110);
-  --muted-foreground: oklch(0.47 0.045 140);
+  --muted: oklch(0.96 0.003 270);
+  --muted-foreground: oklch(0.52 0.008 270);
 
-  /* golden sunlight accent */
-  --accent: oklch(0.81 0.15 84);
-  --accent-foreground: oklch(0.28 0.07 75);
+  /* soft accent wash */
+  --accent: oklch(0.95 0.03 150);
+  --accent-foreground: oklch(0.33 0.08 150);
 
-  /* terracotta / clay */
-  --clay: oklch(0.64 0.16 42);
-  --clay-foreground: oklch(0.98 0.02 95);
+  /* ── low-chroma pops (used sparingly for category accents) ── */
+  --lime: oklch(0.66 0.07 150);          /* muted sage */
+  --jade: oklch(0.6 0.05 200);           /* muted teal */
+  --grape: oklch(0.55 0.12 285);         /* muted indigo */
+  --grape-foreground: oklch(0.99 0.01 285);
+  --coral: oklch(0.62 0.1 18);           /* muted rose (likes) */
+  --coral-foreground: oklch(0.99 0.02 18);
+  --cyan: oklch(0.62 0.06 240);          /* muted slate-blue */
 
-  /* teal — cool analogous companion for gradients */
-  --teal: oklch(0.62 0.12 195);
+  /* legacy aliases kept so existing markup stays valid */
+  --clay: oklch(0.62 0.1 18);
+  --clay-foreground: oklch(0.99 0.02 18);
+  --teal: oklch(0.6 0.05 200);
 
-  --destructive: oklch(0.58 0.18 28);
-  --destructive-foreground: oklch(0.98 0.02 95);
+  --destructive: oklch(0.58 0.18 25);
+  --destructive-foreground: oklch(0.99 0.02 25);
 
-  --border: oklch(0.87 0.035 120);
-  --input: oklch(0.87 0.035 120);
-  --ring: oklch(0.53 0.15 152);
+  --border: oklch(0.91 0.004 270);
+  --input: oklch(0.91 0.004 270);
+  --ring: oklch(0.57 0.13 152);
 
-  --radius: 1.15rem;
+  --radius: 1.25rem;
 
-  /* warm, green-tinted shadows instead of flat gray */
-  --shadow-soft: 0 1px 2px oklch(0.4 0.05 150 / 0.05), 0 8px 24px -12px oklch(0.4 0.08 150 / 0.18);
-  --shadow-lift: 0 2px 4px oklch(0.4 0.05 150 / 0.06), 0 18px 40px -16px oklch(0.4 0.1 150 / 0.28);
-  --glow-primary: 0 0 0 1px oklch(0.53 0.15 152 / 0.15), 0 12px 30px -10px oklch(0.53 0.15 152 / 0.4);
-  --glow-accent: 0 10px 28px -8px oklch(0.81 0.15 84 / 0.55);
+  /* punchy, color-tinted shadows */
+  --shadow-soft: 0 1px 2px oklch(0.4 0.06 150 / 0.06), 0 10px 28px -14px oklch(0.4 0.1 150 / 0.22);
+  --shadow-lift: 0 2px 6px oklch(0.4 0.06 150 / 0.08), 0 22px 48px -18px oklch(0.4 0.12 150 / 0.32);
+  --glow-primary: 0 0 0 1px oklch(0.57 0.13 152 / 0.16), 0 14px 34px -12px oklch(0.57 0.13 152 / 0.35);
+  --glow-accent: 0 12px 30px -10px oklch(0.57 0.13 152 / 0.3);
 
-  --chart-1: oklch(0.53 0.15 152);
-  --chart-2: oklch(0.81 0.15 84);
-  --chart-3: oklch(0.64 0.16 42);
-  --chart-4: oklch(0.62 0.12 195);
-  --chart-5: oklch(0.7 0.13 130);
+  --chart-1: oklch(0.57 0.13 152);
+  --chart-2: oklch(0.6 0.05 200);
+  --chart-3: oklch(0.66 0.07 150);
+  --chart-4: oklch(0.62 0.06 240);
+  --chart-5: oklch(0.62 0.1 18);
 
   --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  /* serif var repointed to the display font so existing `font-serif` headings
+     adopt the warm humanist serif without touching every component */
+  --font-serif: var(--font-display);
 }
 
 .dark {
-  --background: oklch(0.2 0.03 152);
-  --foreground: oklch(0.95 0.02 100);
+  /* ── Refined Neutral (dark) ─────────────────────────────────────────
+     Calm charcoal (neutral, no hue cast); single refined indigo accent. */
+  --background: oklch(0.2 0.004 270);
+  --foreground: oklch(0.95 0.005 270);
 
-  --card: oklch(0.25 0.035 152);
-  --card-foreground: oklch(0.95 0.02 100);
+  --card: oklch(0.24 0.005 270);
+  --card-foreground: oklch(0.95 0.005 270);
 
-  --popover: oklch(0.25 0.035 152);
-  --popover-foreground: oklch(0.95 0.02 100);
+  --popover: oklch(0.24 0.005 270);
+  --popover-foreground: oklch(0.95 0.005 270);
 
-  --primary: oklch(0.72 0.15 150);
-  --primary-foreground: oklch(0.18 0.03 150);
+  --primary: oklch(0.68 0.14 152);
+  --primary-foreground: oklch(0.16 0.03 150);
 
-  --secondary: oklch(0.32 0.05 150);
-  --secondary-foreground: oklch(0.95 0.02 100);
+  --secondary: oklch(0.29 0.006 270);
+  --secondary-foreground: oklch(0.95 0.005 270);
 
-  --muted: oklch(0.3 0.04 150);
-  --muted-foreground: oklch(0.72 0.04 120);
+  --muted: oklch(0.27 0.005 270);
+  --muted-foreground: oklch(0.72 0.008 270);
 
-  --accent: oklch(0.79 0.14 84);
-  --accent-foreground: oklch(0.22 0.05 75);
+  --accent: oklch(0.33 0.04 152);
+  --accent-foreground: oklch(0.9 0.06 150);
 
-  --clay: oklch(0.68 0.15 42);
-  --clay-foreground: oklch(0.98 0.02 95);
+  --lime: oklch(0.72 0.07 150);
+  --jade: oklch(0.68 0.05 200);
+  --grape: oklch(0.64 0.13 285);
+  --grape-foreground: oklch(0.99 0.01 285);
+  --coral: oklch(0.66 0.11 18);
+  --coral-foreground: oklch(0.99 0.02 18);
+  --cyan: oklch(0.68 0.07 240);
 
-  --teal: oklch(0.68 0.12 195);
+  --clay: oklch(0.66 0.11 18);
+  --clay-foreground: oklch(0.99 0.02 18);
+  --teal: oklch(0.68 0.05 200);
 
-  --destructive: oklch(0.62 0.19 28);
-  --destructive-foreground: oklch(0.98 0.02 95);
+  --destructive: oklch(0.62 0.18 25);
+  --destructive-foreground: oklch(0.99 0.02 25);
 
-  --border: oklch(0.34 0.04 150);
-  --input: oklch(0.34 0.04 150);
-  --ring: oklch(0.72 0.15 150);
+  --border: oklch(0.32 0.006 270);
+  --input: oklch(0.32 0.006 270);
+  --ring: oklch(0.68 0.14 152);
 
-  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.2), 0 8px 24px -12px oklch(0 0 0 / 0.5);
-  --shadow-lift: 0 2px 4px oklch(0 0 0 / 0.25), 0 18px 40px -16px oklch(0 0 0 / 0.6);
-  --glow-primary: 0 0 0 1px oklch(0.72 0.15 150 / 0.2), 0 12px 30px -10px oklch(0.72 0.15 150 / 0.45);
-  --glow-accent: 0 10px 28px -8px oklch(0.79 0.14 84 / 0.5);
+  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.3), 0 10px 28px -14px oklch(0 0 0 / 0.6);
+  --shadow-lift: 0 2px 6px oklch(0 0 0 / 0.35), 0 22px 48px -18px oklch(0 0 0 / 0.7);
+  --glow-primary: 0 0 0 1px oklch(0.68 0.14 152 / 0.25), 0 0 34px -6px oklch(0.68 0.14 152 / 0.5);
+  --glow-accent: 0 0 32px -6px oklch(0.68 0.14 152 / 0.5);
 }
 
 @theme inline {
@@ -115,6 +137,13 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-lime: var(--lime);
+  --color-jade: var(--jade);
+  --color-grape: var(--grape);
+  --color-grape-foreground: var(--grape-foreground);
+  --color-coral: var(--coral);
+  --color-coral-foreground: var(--coral-foreground);
+  --color-cyan: var(--cyan);
   --color-clay: var(--clay);
   --color-clay-foreground: var(--clay-foreground);
   --color-teal: var(--teal);
@@ -132,11 +161,12 @@
 
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
+  --font-display: var(--font-display);
 
   --shadow-soft: var(--shadow-soft);
   --shadow-lift: var(--shadow-lift);
 
-  --radius-sm: calc(var(--radius) - 6px);
+  --radius-sm: calc(var(--radius) - 8px);
   --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 6px);
@@ -150,41 +180,53 @@
   * {
     border-color: var(--border);
   }
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
-    /* ambient solarpunk mesh: golden sun top, verdant blooms at the sides */
+    /* very faint single-accent wash, kept minimal */
     background-image:
-      radial-gradient(60% 50% at 50% -10%, oklch(0.86 0.13 90 / 0.5), transparent 70%),
-      radial-gradient(40% 45% at 0% 15%, oklch(0.7 0.14 150 / 0.16), transparent 60%),
-      radial-gradient(45% 50% at 100% 30%, oklch(0.7 0.1 195 / 0.14), transparent 60%);
+      radial-gradient(60% 45% at 50% -15%, oklch(0.57 0.13 152 / 0.05), transparent 70%);
     background-attachment: fixed;
   }
+  .dark body {
+    background-image:
+      radial-gradient(60% 45% at 50% -15%, oklch(0.68 0.14 152 / 0.07), transparent 70%);
+  }
   h1, h2, h3, h4 {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     letter-spacing: -0.01em;
+    font-weight: 600;
+    font-optical-sizing: auto;
   }
 }
 
-/* ---- Solarpunk utility kit ---- */
+/* ---- Hyper Bloom utility kit ---- */
 
-/* gradient ink for wordmarks + hero headings (green -> gold, analogous/warm) */
+/* solid brand ink for the wordmark (no gradient) */
 .text-gradient {
-  background-image: linear-gradient(105deg, var(--primary), oklch(0.66 0.16 110) 45%, var(--accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--primary);
+}
+
+/* solid hero surface for the score card (no gradient) */
+.bg-hero {
+  background-color: var(--primary);
 }
 
 /* frosted glass surface */
 .glass {
-  background-color: oklch(0.99 0.012 95 / 0.7);
-  backdrop-filter: blur(14px) saturate(1.4);
-  border: 1px solid oklch(1 0 0 / 0.4);
+  background-color: oklch(1 0 0 / 0.72);
+  backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid oklch(1 0 0 / 0.5);
 }
 .dark .glass {
-  background-color: oklch(0.25 0.035 152 / 0.65);
+  background-color: oklch(0.21 0.024 162 / 0.68);
   border-color: oklch(1 0 0 / 0.08);
 }
 
@@ -205,18 +247,35 @@
 
 /* sun-rays bloom (kept for auth/hero) */
 .bg-sun-rays {
-  background-image: radial-gradient(circle at 50% -20%, oklch(0.88 0.13 90 / 0.6), transparent 60%);
+  background-image: radial-gradient(circle at 50% -20%, oklch(0.86 0.22 128 / 0.55), transparent 60%);
 }
 
 /* organic dotted-leaf texture for empty/feature panels */
 .bg-leaf-dots {
-  background-image: radial-gradient(oklch(0.53 0.15 152 / 0.12) 1.4px, transparent 1.4px);
-  background-size: 18px 18px;
+  background-image: radial-gradient(color-mix(in oklch, var(--primary) 14%, transparent) 1.4px, transparent 1.4px);
+  background-size: 20px 20px;
 }
 
-/* warm gradient washes for feature blocks */
+/* faint paper grain for a natural, tactile surface */
+.bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+}
+
+/* organic asymmetric corners — hand-thrown, not machined */
+.rounded-organic {
+  border-radius: 1.6rem 1rem 1.6rem 1rem;
+}
+.rounded-organic-lg {
+  border-radius: 2.2rem 1.3rem 2.2rem 1.3rem;
+}
+/* leaf-notched corner (single asymmetric leaf tip) */
+.rounded-leaf {
+  border-radius: 1.5rem 1.5rem 1.5rem 0.35rem;
+}
+
+/* soft solid wash for feature blocks (no gradient — kept calm) */
 .bg-bloom {
-  background-image: linear-gradient(135deg, oklch(0.55 0.15 152 / 0.12), oklch(0.81 0.15 84 / 0.14));
+  background-color: var(--secondary);
 }
 
 @keyframes float {

@@ -30,13 +30,13 @@ export function LikeButton({
       disabled={isPending}
       aria-pressed={liked}
       className={cn(
-        "flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+        "flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors",
         liked
-          ? "border-accent/40 bg-accent/10 text-accent"
-          : "border-border text-muted-foreground hover:border-accent/40 hover:text-accent",
+          ? "border-coral/50 bg-coral/15 text-coral"
+          : "border-border text-muted-foreground hover:border-coral/50 hover:text-coral",
       )}
     >
-      <Heart className={cn("h-5 w-5", liked && "fill-current")} />
+      <Heart key={`${liked}`} className={cn("h-5 w-5", liked && "animate-pop fill-current")} />
       {count} {count === 1 ? "cheer" : "cheers"}
     </button>
   )

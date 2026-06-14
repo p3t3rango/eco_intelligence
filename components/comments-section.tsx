@@ -26,7 +26,7 @@ export function CommentsSection({ postId, comments }: { postId: number; comments
 
   return (
     <section className="space-y-4">
-      <h2 className="font-serif text-lg font-semibold text-foreground">
+      <h2 className="font-serif text-xl font-extrabold text-foreground">
         Cheers &amp; tips {comments.length > 0 ? `(${comments.length})` : ""}
       </h2>
 
@@ -38,7 +38,7 @@ export function CommentsSection({ postId, comments }: { postId: number; comments
           rows={2}
           disabled={isPending}
         />
-        <Button onClick={submit} disabled={isPending || !body.trim()} size="icon" className="h-auto self-stretch px-4">
+        <Button onClick={submit} disabled={isPending || !body.trim()} size="icon" className="h-auto self-stretch px-4 glow-primary">
           <Send className="h-4 w-4" />
           <span className="sr-only">Post comment</span>
         </Button>
@@ -54,7 +54,7 @@ export function CommentsSection({ postId, comments }: { postId: number; comments
                 <AvatarImage src={c.author.avatarUrl ?? undefined} alt={c.author.displayName} />
                 <AvatarFallback>{c.author.displayName.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
-              <div className="flex-1 rounded-2xl bg-secondary px-4 py-2.5">
+              <div className="flex-1 rounded-2xl bg-secondary px-4 py-3 shadow-soft">
                 <div className="flex items-baseline gap-2">
                   <span className="text-sm font-medium text-foreground">{c.author.displayName}</span>
                   <span className="text-xs text-muted-foreground">@{c.author.handle}</span>

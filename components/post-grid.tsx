@@ -7,7 +7,7 @@ import { Lock } from "lucide-react"
 export function PostGrid({ posts }: { posts: FeedPost[] }) {
   if (posts.length === 0) {
     return (
-      <p className="rounded-2xl border border-dashed border-border bg-card/60 py-12 text-center text-sm text-muted-foreground">
+      <p className="bg-leaf-dots rounded-3xl border border-border/70 bg-card/60 py-12 text-center text-sm text-muted-foreground shadow-soft">
         No yards shared yet.
       </p>
     )
@@ -19,7 +19,7 @@ export function PostGrid({ posts }: { posts: FeedPost[] }) {
         <Link
           key={post.id}
           href={`/post/${post.id}`}
-          className="group relative overflow-hidden rounded-xl border border-border"
+          className="group lift relative overflow-hidden rounded-2xl border border-border/70 shadow-soft"
         >
           <Image
             src={post.imageUrl || "/placeholder.svg"}

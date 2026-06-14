@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { comments, likes, posts, profiles, yardTasks } from "@/lib/db/schema"
 import { asc, desc, eq, sql, and } from "drizzle-orm"
+import type { PlantingMarker } from "@/lib/types"
 
 export type FeedPost = {
   id: number
@@ -20,6 +21,8 @@ export type FeedPost = {
     water: number
   }
   analysis: unknown
+  renderUrl: string | null
+  markers: PlantingMarker[] | null
   createdAt: Date
   author: {
     userId: string
@@ -54,6 +57,8 @@ function mapRow(row: any, likedByMe: boolean): FeedPost {
       water: row.waterScore,
     },
     analysis: row.analysis,
+    renderUrl: row.renderUrl ?? null,
+    markers: (row.layout && typeof row.layout === "object" ? (row.layout as any).markers : null) ?? null,
     createdAt: row.createdAt,
     author: {
       userId: row.authorId,
@@ -86,6 +91,8 @@ const baseSelect = {
   foodScore: posts.foodScore,
   waterScore: posts.waterScore,
   analysis: posts.analysis,
+  renderUrl: posts.renderUrl,
+  layout: posts.layout,
   createdAt: posts.createdAt,
   authorId: posts.userId,
   displayName: profiles.displayName,
