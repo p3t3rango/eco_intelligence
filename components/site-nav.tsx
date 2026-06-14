@@ -5,7 +5,7 @@ import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
-import { Home, Trophy, Sprout, User, LogOut, Users } from "lucide-react"
+import { Home, Trophy, Sprout, User, LogOut, Users, BookOpen } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -19,6 +19,7 @@ const links = [
   { href: "/", label: "My Yard", icon: Home },
   { href: "/community", label: "Community", icon: Users },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/learn", label: "Learn", icon: BookOpen },
 ]
 
 export function SiteNav({ user }: { user: NavUser | null }) {
@@ -40,8 +41,8 @@ export function SiteNav({ user }: { user: NavUser | null }) {
             <Image src="/leaf-mark.png" alt="" width={24} height={24} className="h-6 w-6" />
           </span>
           <span className="font-serif text-lg font-semibold leading-none tracking-tight">
-            <span className="text-gradient">Ecological</span>
-            <span className="text-foreground">Intelligence</span>
+            <span className="text-gradient">Anima</span>
+            <span className="text-foreground"> Commune</span>
           </span>
         </Link>
 

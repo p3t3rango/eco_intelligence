@@ -19,7 +19,7 @@ const nunito = Nunito_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "Ecological Intelligence — Regenerate Your Patch of Earth",
+  title: "The Anima Commune — Regenerate Your Patch of Earth",
   description:
     "Photograph your yard, understand what you have, choose what you want it to become, and get a place-grounded plan to make it more alive.",
   generator: "v0.app",

@@ -7,7 +7,7 @@ import type { YardAnalysis, GoalKey } from "@/lib/types"
 import { GOALS } from "@/lib/types"
 import { dismissPlant } from "@/app/actions/posts"
 import { Badge } from "@/components/ui/badge"
-import { Eye, Leaf, Sprout, Bird, HeartHandshake, Sparkles, X } from "lucide-react"
+import { Eye, Leaf, Sprout, Bird, HeartHandshake, Sparkles, X, ExternalLink } from "lucide-react"
 
 function goalLabel(key: GoalKey) {
   return GOALS.find((g) => g.key === key)?.label ?? key
@@ -222,6 +222,14 @@ export function PlanDetails({
                     </div>
                     {fmt.secondary ? <p className="text-xs italic text-muted-foreground">{fmt.secondary}</p> : null}
                     {p.reason ? <p className="mt-1 text-sm text-muted-foreground">{p.reason}</p> : null}
+                    <a
+                      href={`https://www.inaturalist.org/taxa/search?q=${encodeURIComponent(fmt.secondary ?? fmt.primary)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                    >
+                      Learn more <ExternalLink className="h-3 w-3" />
+                    </a>
                   </div>
                 </div>
               )
