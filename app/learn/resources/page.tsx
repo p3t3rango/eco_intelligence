@@ -18,7 +18,7 @@ const SECTIONS: Section[] = [
   {
     key: "herbalism",
     title: "Herbalism",
-    blurb: "Evidence-based starting points for medicinal & culinary plants.",
+    blurb: "Plants can heal and nurture us. Discover which ones resonate with your needs.",
     icon: Leaf,
     tint: "bg-primary/12 text-primary",
     resources: [
@@ -30,7 +30,7 @@ const SECTIONS: Section[] = [
   {
     key: "mycology",
     title: "Mycology",
-    blurb: "Start with community and identification — never with a plate.",
+    blurb: "Fungi are so much more than something to eat — complex beings worth a real relationship. Start with community and ID, never a plate.",
     icon: Sparkles,
     tint: "bg-grape/12 text-grape",
     resources: [
@@ -42,7 +42,7 @@ const SECTIONS: Section[] = [
   {
     key: "native",
     title: "Native plants & restoration",
-    blurb: "What belongs where — and how to bring it back.",
+    blurb: "Return to our ancient relationship with the native plants of your place.",
     icon: Sprout,
     tint: "bg-jade/12 text-jade",
     resources: [
