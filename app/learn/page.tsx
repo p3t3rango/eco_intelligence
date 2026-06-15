@@ -5,7 +5,7 @@ import { ensureProfile } from "@/app/actions/profile"
 import { getAllPosts } from "@/lib/posts"
 import { SiteNav } from "@/components/site-nav"
 import { BranchDivider, LeafSpray } from "@/components/botanical"
-import { BookOpen, Clock, ArrowRight, ShieldAlert } from "lucide-react"
+import { BookOpen, Clock, ArrowRight, ShieldAlert, Library } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Field Notes — The Anima Commune",
@@ -73,6 +73,21 @@ export default async function LearnPage() {
               </span>
             </Link>
           ))}
+
+          {/* Quick-reference link library */}
+          <Link
+            href="/learn/resources"
+            className="lift rounded-organic group flex items-center gap-3 border-2 border-primary/25 bg-bloom p-4 shadow-soft transition-colors hover:border-primary/40"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-leaf bg-primary/15 text-primary">
+              <Library className="h-5 w-5" />
+            </span>
+            <div className="flex-1">
+              <p className="font-serif text-lg font-semibold text-foreground">The Trusted Shelf</p>
+              <p className="text-sm text-muted-foreground">Our vetted, at-a-glance library of the best sources.</p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </div>
       </main>
     </div>
