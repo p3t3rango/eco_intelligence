@@ -36,10 +36,12 @@ export default async function LearnPage() {
           <p className="flex items-center justify-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
             <BookOpen className="h-4 w-4" /> Field Notes
           </p>
-          <h1 className="mt-1 font-serif text-4xl font-semibold tracking-tight text-foreground">Notes from the living world</h1>
-          <p className="mx-auto mt-2 max-w-md text-pretty leading-relaxed text-muted-foreground">
-            Short reads on herbalism, mycology, and native plants — how to notice them, learn them safely, and bring them
-            into your own patch of earth.
+          <h1 className="mt-1 font-serif text-4xl font-semibold tracking-tight text-foreground text-balance">
+            Reconnecting with the Natural World
+          </h1>
+          <p className="mx-auto mt-2 max-w-lg text-pretty leading-relaxed text-muted-foreground">
+            In order to be one with nature, you must understand her. Here are some first-step resources for understanding
+            which plants and fungi can enhance you and your community&apos;s holistic wellbeing.
           </p>
           <BranchDivider className="mx-auto mt-4 h-3 w-40 text-primary/30" />
         </header>

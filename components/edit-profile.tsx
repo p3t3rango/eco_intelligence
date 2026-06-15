@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
+import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { updateProfile } from "@/app/actions/profile"
 import { Button } from "@/components/ui/button"
@@ -18,7 +19,20 @@ type Profile = {
 export function EditProfile({ profile }: { profile: Profile }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => setMounted(true), [])
+
+  // Lock body scroll while the modal is open.
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
 
   function action(formData: FormData) {
     startTransition(async () => {
@@ -28,7 +42,7 @@ export function EditProfile({ profile }: { profile: Profile }) {
     })
   }
 
-  if (!open) {
+  if (!open || !mounted) {
     return (
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
         <Pencil className="h-3.5 w-3.5" />
@@ -37,13 +51,19 @@ export function EditProfile({ profile }: { profile: Profile }) {
     )
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+  // Portal to <body> so the fixed overlay escapes any transformed / overflow-hidden
+  // ancestor (e.g. the profile header card) and covers the full viewport.
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center overflow-y-auto bg-foreground/40 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      onClick={() => !isPending && setOpen(false)}
+    >
       <form
         action={action}
-        className="w-full max-w-md space-y-4 rounded-t-3xl border border-border bg-card p-6 shadow-lift animate-rise sm:rounded-3xl"
+        onClick={(e) => e.stopPropagation()}
+        className="my-auto w-full max-w-md space-y-4 rounded-t-3xl border border-border bg-card p-6 shadow-lift animate-rise sm:rounded-3xl"
       >
-        <h2 className="font-display text-2xl font-extrabold text-foreground">Edit profile</h2>
+        <h2 className="font-serif text-2xl font-semibold text-foreground">Edit profile</h2>
         <div className="space-y-2">
           <Label htmlFor="displayName">Display name</Label>
           <Input id="displayName" name="displayName" defaultValue={profile.displayName} required />
@@ -70,6 +90,7 @@ export function EditProfile({ profile }: { profile: Profile }) {
           </Button>
         </div>
       </form>
-    </div>
+    </div>,
+    document.body,
   )
 }
