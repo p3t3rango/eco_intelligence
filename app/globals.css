@@ -279,6 +279,61 @@
   background-color: var(--secondary);
 }
 
+/* ---- Field Notes editorial prose (token-aware, light + dark) ---- */
+.prose-note {
+  color: var(--foreground);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.prose-note > * + * { margin-top: 1.15em; }
+.prose-note h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 1.9em;
+  margin-bottom: -0.1em;
+}
+.prose-note h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.6em;
+}
+.prose-note p { color: oklch(from var(--foreground) l c h / 0.88); }
+.prose-note a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklch, var(--primary) 40%, transparent);
+}
+.prose-note a:hover { text-decoration-color: var(--primary); }
+.prose-note strong { color: var(--foreground); font-weight: 700; }
+.prose-note ul { list-style: none; padding-left: 0; }
+.prose-note li { position: relative; padding-left: 1.4em; margin-top: 0.5em; color: oklch(from var(--foreground) l c h / 0.88); }
+.prose-note li::before {
+  content: "";
+  position: absolute;
+  left: 0.1em;
+  top: 0.7em;
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 999px;
+  background: var(--primary);
+}
+.prose-note blockquote {
+  border-left: 3px solid var(--primary);
+  padding: 0.2em 0 0.2em 1.1em;
+  margin: 1.6em 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+.prose-note hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }

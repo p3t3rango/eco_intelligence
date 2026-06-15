@@ -8,6 +8,7 @@ import { signIn, signUp } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Leaf } from "lucide-react"
 import { toast } from "sonner"
 
@@ -46,16 +47,32 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       <div className="bg-primary pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full opacity-30 blur-3xl" aria-hidden />
       <div className="bg-primary pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full opacity-25 blur-3xl" aria-hidden />
 
+      {/* theme toggle */}
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle className="glass rounded-full p-2 text-foreground transition-colors hover:text-primary" />
+      </div>
+
       <div className="animate-rise relative w-full max-w-md">
-        <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
+        <Link href="/" className="mb-5 flex items-center justify-center gap-2.5">
           <span className="animate-float flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground glow-primary">
             <Leaf className="h-6 w-6" />
           </span>
-          <span className="font-serif text-2xl font-extrabold tracking-tight">
-            <span className="text-foreground">Ecological</span>
-            <span className="text-foreground"> Intelligence</span>
+          <span className="font-serif text-2xl font-semibold tracking-tight">
+            <span className="text-gradient">Anima</span>
+            <span className="text-foreground"> Commune</span>
           </span>
         </Link>
+
+        {/* 5-second hook */}
+        <div className="mb-8 text-center">
+          <h2 className="font-serif text-2xl font-semibold leading-snug text-foreground text-balance sm:text-3xl">
+            Meet your land — and grow it back to life.
+          </h2>
+          <p className="mx-auto mt-2 max-w-sm text-pretty text-sm leading-relaxed text-muted-foreground">
+            Snap a photo of your yard. Get a place-grounded plan — native plants, pollinators, and the steps to make it
+            more alive — then watch it transform.
+          </p>
+        </div>
 
         <div className="glass rounded-3xl p-8 shadow-lift">
           <h1 className="font-serif text-4xl font-extrabold leading-[1.05] text-card-foreground text-balance">

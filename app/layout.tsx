@@ -35,7 +35,8 @@ export const viewport: Viewport = {
 }
 
 // Applies the saved (or system) theme before first paint to avoid a flash.
-const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(t==='dark'){document.documentElement.classList.add('dark')}}catch(e){}})();`
+// Default to light (the brand look); dark mode is opt-in via the toggle and persists.
+const themeScript = `(function(){try{var t=localStorage.getItem('theme')||'light';if(t==='dark'){document.documentElement.classList.add('dark')}}catch(e){}})();`
 
 export default function RootLayout({
   children,
