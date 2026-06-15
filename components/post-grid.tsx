@@ -19,7 +19,7 @@ export function PostGrid({ posts }: { posts: FeedPost[] }) {
         <Link
           key={post.id}
           href={`/post/${post.id}`}
-          className="group lift relative overflow-hidden rounded-2xl border border-border/70 shadow-soft"
+          className="group lift relative overflow-hidden rounded-organic border border-border/70 shadow-soft"
         >
           <Image
             src={post.imageUrl || "/placeholder.svg"}

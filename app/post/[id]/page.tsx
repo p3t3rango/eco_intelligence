@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
 import { ensureProfile } from "@/app/actions/profile"
 import { getComments, getPost, getTasks } from "@/lib/queries"
+import { getPlantImages } from "@/lib/ecology"
 import type { YardAnalysis } from "@/lib/types"
 import { SiteNav } from "@/components/site-nav"
 import { ScoreRing } from "@/components/score-ring"
@@ -37,7 +38,23 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   if (!post.isShared && !isOwner) notFound()
 
   const [comments, tasks] = await Promise.all([getComments(postId), getTasks(postId)])
-  const analysis = post.analysis as YardAnalysis | null
+  let analysis = post.analysis as YardAnalysis | null
+
+  // Backfill plant photos at render time for any plant missing one (older posts,
+  // or plans generated before image lookup). iNat responses are cached.
+  if (analysis?.plants?.length) {
+    const missing = analysis.plants.filter((p) => !p.imageUrl).map((p) => p.name)
+    if (missing.length) {
+      const imgs = await getPlantImages(missing)
+      const withImg = <T extends { name: string; imageUrl?: string | null; imageAttribution?: string | null }>(p: T): T =>
+        p.imageUrl || !imgs[p.name] ? p : { ...p, imageUrl: imgs[p.name].imageUrl, imageAttribution: imgs[p.name].attribution }
+      analysis = {
+        ...analysis,
+        plants: analysis.plants.map(withImg),
+        plan: analysis.plan ? { ...analysis.plan, plants: analysis.plan.plants.map(withImg) } : analysis.plan,
+      }
+    }
+  }
 
   return (
     <div className="min-h-dvh pb-24 sm:pb-0">

@@ -1,11 +1,12 @@
 import Link from "next/link"
+import Image from "next/image"
 import { redirect } from "next/navigation"
 import { getSession } from "@/lib/session"
 import { ensureProfile } from "@/app/actions/profile"
 import { getLeaderboard } from "@/lib/queries"
 import { SiteNav } from "@/components/site-nav"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Trophy, MapPin, Sprout } from "lucide-react"
+import { Trophy, MapPin, Sprout, Leaf } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const RANK_STYLES = [
@@ -35,13 +36,13 @@ export default async function LeaderboardPage() {
             <Trophy className="h-6 w-6" />
           </span>
           <div>
-            <h1 className="font-serif text-3xl font-extrabold text-foreground">Regeneration Leaders</h1>
+            <h1 className="font-serif text-3xl font-semibold text-foreground">Regeneration Leaders</h1>
             <p className="text-sm text-muted-foreground">Ranked by total ecological impact across all shared land.</p>
           </div>
         </div>
 
         {leaders.length === 0 ? (
-          <div className="bg-leaf-dots flex flex-col items-center gap-3 rounded-3xl border border-border/70 bg-card/60 py-16 text-center shadow-soft">
+          <div className="bg-leaf-dots flex flex-col items-center gap-3 rounded-organic border border-border/70 bg-card/60 py-16 text-center shadow-soft">
             <Sprout className="h-8 w-8 text-primary" />
             <p className="text-sm text-muted-foreground">No scores yet. Be the first to plant the flag.</p>
             <Link href="/grow" className="bg-primary lift rounded-full px-6 py-3 text-sm font-bold text-primary-foreground shadow-soft hover:glow-primary">
@@ -57,19 +58,29 @@ export default async function LeaderboardPage() {
                   <Link
                     href={`/u/${leader.handle}`}
                     className={cn(
-                      "lift flex items-center gap-4 rounded-3xl border bg-card p-4 shadow-soft",
+                      "lift flex items-center gap-3 rounded-organic border bg-card p-4 shadow-soft sm:gap-4",
                       isMe ? "border-primary/50 ring-2 ring-primary/25" : "border-border/70",
                     )}
                   >
                     <span
                       className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl font-serif text-lg font-extrabold",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-leaf font-serif text-lg font-semibold",
                         i < 3 ? RANK_STYLES[i] : "bg-muted text-muted-foreground",
                       )}
                     >
                       {i + 1}
                     </span>
-                    <Avatar className="h-12 w-12 border border-border">
+                    {/* representative shared yard */}
+                    {leader.topYardImage ? (
+                      <div className="relative hidden h-12 w-12 shrink-0 overflow-hidden rounded-leaf bg-muted sm:block">
+                        <Image src={leader.topYardImage} alt="" fill sizes="48px" className="object-cover" />
+                      </div>
+                    ) : (
+                      <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-leaf bg-primary/10 text-primary sm:flex">
+                        <Leaf className="h-5 w-5" />
+                      </div>
+                    )}
+                    <Avatar className="h-11 w-11 border border-border">
                       <AvatarImage src={leader.avatarUrl ?? undefined} alt={leader.displayName} />
                       <AvatarFallback>{leader.displayName.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>

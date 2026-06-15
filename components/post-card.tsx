@@ -43,7 +43,7 @@ export function PostCard({ post }: { post: FeedPost }) {
   }
 
   return (
-    <article className="lift overflow-hidden rounded-3xl border border-border/70 bg-card shadow-soft">
+    <article className="lift overflow-hidden rounded-organic border border-border/70 bg-card shadow-soft">
       {/* Author */}
       <div className="flex items-center gap-3 p-4">
         <Link href={`/u/${post.author.handle}`}>

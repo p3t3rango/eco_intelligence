@@ -246,6 +246,7 @@ export type LeaderRow = {
   avgScore: number
   postCount: number
   totalImpact: number
+  topYardImage: string | null
 }
 
 // Leaderboard ranks only SHARED yards — competing is opt-in.
@@ -261,6 +262,7 @@ export async function getLeaderboard(): Promise<LeaderRow[]> {
       avgScore: sql<number>`coalesce(round(avg(${posts.regenScore})), 0)`,
       postCount: sql<number>`count(${posts.id})`,
       totalImpact: sql<number>`coalesce(sum(${posts.regenScore}), 0)`,
+      topYardImage: sql<string | null>`(select p."imageUrl" from ${posts} p where p."userId" = ${profiles.userId} and p."isShared" = true order by p."regenScore" desc nulls last limit 1)`,
     })
     .from(profiles)
     .leftJoin(posts, and(eq(posts.userId, profiles.userId), eq(posts.isShared, true)))
@@ -280,6 +282,7 @@ export async function getLeaderboard(): Promise<LeaderRow[]> {
       avgScore: Number(r.avgScore),
       postCount: Number(r.postCount),
       totalImpact: Number(r.totalImpact),
+      topYardImage: r.topYardImage ?? null,
     }))
 }
 
