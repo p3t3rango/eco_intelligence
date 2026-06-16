@@ -5,6 +5,10 @@ import { SiteNav } from "@/components/site-nav"
 import { GrowWizard } from "@/components/grow-wizard"
 import { Sprout } from "lucide-react"
 
+// AI reading + planning (Gemini + iNaturalist) can take 15-30s — extend the
+// serverless function timeout so server actions don't get killed on Vercel.
+export const maxDuration = 60
+
 export default async function GrowPage() {
   const session = await getSession()
   if (!session?.user) redirect("/sign-in")

@@ -183,11 +183,16 @@
   }
   html {
     color-scheme: light;
+    /* clip (not hidden) prevents horizontal overflow without breaking the
+       sticky nav — fixes the "have to zoom out" issue on phones */
+    overflow-x: clip;
   }
   html.dark {
     color-scheme: dark;
   }
   body {
+    overflow-x: clip;
+    max-width: 100%;
     background-color: var(--background);
     color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;

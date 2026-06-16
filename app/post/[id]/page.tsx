@@ -21,6 +21,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Sparkles, ArrowLeft, Globe, Lock } from "lucide-react"
 
+// Plan rebuild + image generation (Gemini) run as server actions from this
+// route and can take 15-30s+ — extend the serverless timeout.
+export const maxDuration = 60
+
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const postId = Number(id)
