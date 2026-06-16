@@ -26,8 +26,8 @@ export function YardCard({ post }: { post: FeedPost }) {
             height={120}
             className="h-20 w-20 rounded-2xl object-cover ring-2 ring-border/50 sm:h-24 sm:w-24"
           />
-          <div className="glass absolute -bottom-2 -right-2 rounded-full p-0.5 shadow-lift">
-            <ScoreRing score={post.regenScore} size={36} stroke={5} />
+          <div className="glass absolute -bottom-1.5 -right-1.5 rounded-full p-1 shadow-lift">
+            <ScoreRing score={post.regenScore} size={44} stroke={5} label="" />
           </div>
         </Link>
 

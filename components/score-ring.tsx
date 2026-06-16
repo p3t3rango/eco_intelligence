@@ -61,9 +61,19 @@ export function ScoreRing({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <Sprout className="mb-0.5 h-3 w-3 text-primary/50" style={{ width: size * 0.13, height: size * 0.13 }} />
-        <span className={cn("font-serif text-2xl font-semibold leading-none", scoreColor(clamped))}>{clamped}</span>
-        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+        {/* Sprout + label only at larger sizes; tiny badges show just the number. */}
+        {size >= 64 ? (
+          <Sprout className="mb-0.5 text-primary/50" style={{ width: size * 0.13, height: size * 0.13 }} />
+        ) : null}
+        <span
+          className={cn("font-serif font-semibold leading-none tabular-nums", scoreColor(clamped))}
+          style={{ fontSize: Math.max(11, Math.round(size * 0.32)) }}
+        >
+          {clamped}
+        </span>
+        {size >= 64 && label ? (
+          <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+        ) : null}
       </div>
     </div>
   )
